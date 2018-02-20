@@ -1,8 +1,8 @@
-from flask import Flask
-from flask_api import FlaskAPI
+from flask import Flask, request
+from flask_restful import Resource, Api
 
 app = Flask(__name__)
-app = FlaskAPI(__name__)
+api = Api(app)
 
 
-from app import routes
+from app import apis
