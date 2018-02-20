@@ -1,0 +1,56 @@
+.grad-pinky {
+  background: linear-gradient(60deg, #DE2574, #FE4E30);
+}
+
+.grad-tomato {
+  background: linear-gradient(60deg, #FF592A, #FF1528);
+}
+
+.grad-orange {
+  background: linear-gradient(60deg, #FFF200, #FF5B00);
+}
+
+.grad-lemon {
+  background: linear-gradient(60deg, #FFF315, #A0E900);
+}
+
+.grad-leafy {
+  background: linear-gradient(60deg, #87FF55, #007F36);
+}
+
+.grad-sky {
+  background: linear-gradient(60deg, #58DB9C, #42A5EB);
+}
+
+.grad-ocean {
+  background: linear-gradient(60deg, #00C4CC, #2F2BE8);
+}
+
+.grad-aqua {
+  background: linear-gradient(60deg, #00C4CC, #7C2BE8);
+}
+
+.grad-purple {
+  background: linear-gradient(60deg, #DC5D92, #830381);
+}
+
+.grad-maroon {
+  background: linear-gradient(60deg, #D93F85, #720330);
+}
+
+.grad-chocolate {
+  background: linear-gradient(60deg, #C75D3D, #512B20);
+}
+
+.grad-night {
+  background: linear-gradient(60deg, #3D243D, #120B12);
+}
+
+.grad-grey {
+  background: linear-gradient(60deg, #3F3F3F, #000000);
+}
+
+.grad-paper {
+  background: linear-gradient(60deg, #FFFFFF, #E3E3E3);
+}
+/*# sourceMappingURL=gradstrap.css.map */
