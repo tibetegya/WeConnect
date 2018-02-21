@@ -82,3 +82,5 @@ api.add_resource(User, '/api/v1/users/<user_id>',)
 api.add_resource(UserList, '/api/auth/register' , '/api/v1/users')
 
 
+
+
