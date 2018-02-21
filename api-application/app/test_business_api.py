@@ -5,3 +5,5 @@ class BusinessTestCase(unittest.TestCase):
 
     def setUp(self):
         self.my_business = Business()
+
+        
