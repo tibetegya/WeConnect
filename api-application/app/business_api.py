@@ -69,3 +69,4 @@ class BusinessList(Resource):
 
 api.add_resource(BusinessList, '/api/v1/businesses')
 api.add_resource(Business, '/api/v1/businesses/<business_id>')
+
