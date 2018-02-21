@@ -1,4 +1,5 @@
 # WeConnect 
+![banner](./UI/css/Images/banner.png)
 
 This repository contains the Andela Challenge Project
 
