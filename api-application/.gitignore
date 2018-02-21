@@ -1,0 +1,5 @@
+# virtual environment folder
+venv/
+
+# generated folder after running the application 
+app/__pycache__/
