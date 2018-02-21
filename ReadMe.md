@@ -1,3 +1,4 @@
 # WeConnect
-this is a repo containing the website templates for weconnect
+This repository contains the andela Challenge Project
+
 
