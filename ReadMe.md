@@ -1,5 +1,8 @@
 # WeConnect 
+<<<<<<< HEAD
 ![banner](./UI/css/Images/banner.png)
+=======
+>>>>>>> user-api
 
 This repository contains the Andela Challenge Project
 
@@ -18,10 +21,14 @@ WeConnect is a web application that has a Restful backend api that feeds a React
   - [user-api](https://github.com/tibetegya/WeConnect/tree/feature)
   - [feature](https://github.com/tibetegya/WeConnect/tree/feature)
 
+<<<<<<< HEAD
 ## Dependancies
   API-Application dependencies
   - flask
   - flask-Restful
+=======
+  
+>>>>>>> user-api
 
 
 
