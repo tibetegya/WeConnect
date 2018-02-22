@@ -7,6 +7,7 @@ businesses = {
         'id': 1,
         'name': 'Business 1',
         'location': 'kampala',
+        'category': 'category2',
         'profile': 'picture.png',
         'creation_date': '21 Febuary 2018',
         'business_owner': 'george'        
@@ -15,6 +16,7 @@ businesses = {
         'id': 2,
         'name': 'Business 2',
         'location': 'mukono',
+        'category': 'category2',
         'profile': 'picture.png',
         'creation_date': '21 Febuary 2018',
         'business_owner': 'george'        
@@ -38,6 +40,7 @@ class Business(Resource):
                     'id': args['id'] ,
                     'name': args['name'],
                     'location': args['location'],
+                    'category': args['category'],
                     'profile': args['profile'],
                     'creation_date': args['date'],
                     'business_owner': args['business_owner']        
@@ -57,11 +60,13 @@ class BusinessList(Resource):
                     'id': args['id'] ,
                     'name': args['name'],
                     'location': args['location'],
+                    'category': args['category'],
                     'profile': args['profile'],
                     'creation_date': args['date'],
                     'business_owner': args['business_owner']        
                     }
         return businesses[business_id], 201
 
-api.add_resource(BusinessList, '/businesses')
-api.add_resource(Business, '/businesses/<business_id>')
+api.add_resource(BusinessList, '/api/v1/businesses')
+api.add_resource(Business, '/api/v1/businesses/<business_id>')
+
