@@ -4,77 +4,93 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>WeConnect</title>
+    <meta name="theme-color" content="#4371DB" />
+    <title>WeConnect Login</title>
+    <link rel="shortcut icon" href="css/Images/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="css/gradstrap.css">
     <link rel="stylesheet" href="css/bootstrap.css">
-    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Fira+Sans" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    
 </head>
 <body>
     <div class="container-fluid">
-   
-        <nav class="navbar">
+        
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #4371DB;">
+            <div class="container"> 
+                <a class="navbar-brand circular" href="index.html">
+                    <img src="css/Images/logo.svg" width="40" height="40" class="d-inline-block align-center" alt=""style="margin: 0 .5rem 0 0">
+                    <span>WeConnect</span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
             
-            <a class="navbar-brand" href="#">Weconnect</a>
-            <ul>
-                <li><a href="#">Businesses</a></li>
-                <li><a href="#">Categories</a></li>
-                           
-            </ul>
-            <form class="form-inline my-2 my-md-0">         
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Sign In</button>
-            </form>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-md-auto align-items-center ">
+                        <li class="nav-item ">
+                            <a class="nav-link" href="business-profile.html">Businesses</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Categories</a>
+                        </li>
+
+                    </ul>
+
+                </div><!--navbarSupportContent -->
+            </div><!--Conatiner -->
         </nav>
-        <div class="login-div">
-        <div class="login-div col-md-3 text-center" style="padding:50px 0">
-            <!-- Main Form -->
-            <div class="login-form-1">
-                <form id="login-form" class="text-left">
-                    <div class="login-form-main-message"></div>
-                    <div class="main-login-form">
-                        <div class="login-group">
+
+        <div class="container">
+            <div class="main row">
+                <div class="col-md-12">
+                    <div class="row justify-content-md-center circular "style="margin: 2rem 0 4rem 0; ">
+                        <h1>Log In To your Account</h1>
+                </div>  <!-- end of <div col-md-12 -->
+                <div class="row justify-content-md-center">
+                    <div class="col-md-4">
+                        <form>
                             <div class="form-group">
-                                <label for="lg_username" class="sr-only">Username</label>
-                                <input type="text" class="form-control" id="lg_username" name="lg_username" placeholder="username">
-                            </div>
+                                <label for="exampleInputEmail1">Email address</label>
+                                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                                <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                            </div>  <!-- end of form-group email -->
                             <div class="form-group">
-                                <label for="lg_password" class="sr-only">Password</label>
-                                <input type="password" class="form-control" id="lg_password" name="lg_password" placeholder="password">
-                            </div>
+                                <label for="exampleInputPassword1">Password</label>
+                                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                            </div>  <!-- end of form-group password -->
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                                <label class="form-check-label" for="exampleCheck1">Keep me Logged In</label>
+                            </div>  <!-- end of form-check -->
+                            <div class="row justify-content-md-center">
+                                <button type="submit" class="btn btn-dark col-8"style="margin-top: 1rem; margin-bottom: 10rem ; margin-left: auto ;margin-right: auto ;padding-top: .5rem;padding-top: 0.5rem ">Login</button>
+                            </div>  <!-- row-->
                             
-                        </div>
-                        <button type="submit" class="btn btn-primary col-md-12" >Login</button>
-                    </div>
-                    <div class="etc-login-form">
-                        <p>forgot your password? <a href="#">click here</a></p>
-                        <p>new user? <a href="#">create new account</a></p>
-                    </div>
-                </form>
-            </div>
-            <!-- end:Main Form -->
-        </div>
-        </div>
-        <footer class="bottom">
-            <ul class="">
-                <li><a class="bold" href="#">Categories</a></li>
-                <li><a href="#">Food</a></li>
-                <li><a href="#">Media</a></li>
-                <li><a href="#">Technology</a></li>
-            </ul>
-            <ul class="">
-                <li><a class="bold" href="#">Weconnect</a></li>
-                <li><a href="#">Support</a></li>
-                <li><a href="#">FAQ</a></li>
-                <li><a href="#">Contact Us</a></li>
-            </ul>
-            <ul class="">
-                <li><a class="bold" href="#">Social Media</a></li>
-                <li><a href="#">Facebook</a></li>
-                <li><a href="#">Twitter</a></li>
-                <li><a href="#">Medium</a></li>
-            </ul>
-        </footer>
-            
-    </div>
+                        </form>
+                    </div>  <!-- col-md-4-->
+                </div>  <!-- row-->
+            </div>  <!-- main row-->
+        </div>  <!-- conatiner-->
+        
+
+
+
+
+    </div><!--container-fluid -->
+
+    
+
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+
+    <script src="js/bootstrap.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
