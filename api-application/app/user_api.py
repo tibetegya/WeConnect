@@ -1,6 +1,8 @@
 from flask import Flask, request
 from flask_restful import reqparse, abort, Api, Resource
 from app import app, api
+from flask_jwt import JWT, jwt_required, current_identity
+from werkzeug.security import safe_str_cmp
 
 users = {
     'user1':{

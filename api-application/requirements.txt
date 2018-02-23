@@ -3,6 +3,7 @@ attrs==17.4.0
 click==6.7
 colorama==0.3.9
 Flask==0.12.2
+Flask-HTTPAuth==3.2.3
 Flask-JWT==0.3.2
 Flask-RESTful==0.3.6
 itsdangerous==0.24
