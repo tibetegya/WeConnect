@@ -4,3 +4,4 @@ venv/
 # generated folder after running the application 
 app/__pycache__/
 __pycache__/
+.pytest_cache/

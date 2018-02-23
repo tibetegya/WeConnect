@@ -6,9 +6,4 @@ app = Flask(__name__)
 api = Api(app)
 
 
-<<<<<<< HEAD
-from app import business_api
-=======
-from app import user_api
-
->>>>>>> user-api
+from app import business_api, user_api
