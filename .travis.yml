@@ -1,5 +1,12 @@
   language: python
   python:
     - "3.6"
+  virtualenv:
+    system_site_packages: true
+  install:
+    - pip install -r requirements.txt
   script:
+    - export FLASK_APP=run.py
     - pytest
+    -flask run
+  
