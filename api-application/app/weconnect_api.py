@@ -249,10 +249,10 @@ class Review(Resource):
 
 
 
-api.add_resource(UserAPI, '/api/v1/auth/register', endpoint = 'Register')
-api.add_resource(LoginAPI, '/api/v1/auth/login', endpoint = 'login')
+api.add_resource(UserAPI, '/api/v2/auth/register', endpoint = 'Register')
+api.add_resource(LoginAPI, '/api/v2/auth/login', endpoint = 'login')
 
-api.add_resource(BusinessList, '/api/v1/businesses')
-api.add_resource(Business, '/api/v1/businesses/<business_id>')
+api.add_resource(BusinessList, '/api/v2/businesses')
+api.add_resource(Business, '/api/v2/businesses/<business_id>')
 
-api.add_resource(Review, '/api/v1/businesses/<int:business_id>/reviews')
+api.add_resource(Review, '/api/v2/businesses/<int:business_id>/reviews')
