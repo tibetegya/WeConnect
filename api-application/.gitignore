@@ -5,3 +5,8 @@ venv/
 app/__pycache__/
 __pycache__/
 .pytest_cache/
+app/business_api.py 
+app/review_api.py
+app/test_review_api.py 
+app/test_user_api.py 
+app/user_api.py
