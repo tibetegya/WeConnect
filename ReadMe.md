@@ -142,7 +142,7 @@ In case you are on windows use  ` set `  instead of  ~~` export`~~
 ## Deployment 
 
 The application is deployed on Heroku Server at 
->https://we-connect-1.herokuapp.com/
+>https://weconnect-tibe.herokuapp.com/
 
 ## License
 The project is licensed using MIT License therefore you are free to clone the repository and 
