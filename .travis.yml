@@ -6,7 +6,6 @@
   install:
     - pip install -r requirements.txt
   script:
-    - export FLASK_APP=run.py
     - pytest
-    -flask run
+    
   
