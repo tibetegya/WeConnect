@@ -1,9 +1,11 @@
-from flask import Flask,jsonify, abort, make_response
+from flask import Flask,jsonify, abort, make_response,render_template, url_for
 from flask_restful import Api, Resource, reqparse, fields, marshal
-from app import api, auth
+from app import api, auth,app
 from flask_httpauth import HTTPBasicAuth
 
-
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 '''
 USERS API
