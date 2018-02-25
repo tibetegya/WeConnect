@@ -6,6 +6,7 @@ This repository contains the Andela Challenge Project
 
 **travis-ci** [![Build Status](https://travis-ci.org/tibetegya/WeConnect.svg?branch=business-api)](https://travis-ci.org/tibetegya/WeConnect)       
  **code-climate** [![Test Coverage](https://api.codeclimate.com/v1/badges/3dbd33931a68c9f94865/test_coverage)](https://codeclimate.com/github/tibetegya/WeConnect/test_coverage)
+ [![Maintainability](https://api.codeclimate.com/v1/badges/3dbd33931a68c9f94865/maintainability)](https://codeclimate.com/github/tibetegya/WeConnect/maintainability)
 
 ## Description
 
