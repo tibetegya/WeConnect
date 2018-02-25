@@ -1,7 +1,14 @@
+"""
+    :weconnect_api:
+    ~~~~~
+    
+    A module that contains the endpoints for the WeConnect restful API.
+
+"""
+
 from flask import Flask,jsonify, abort, make_response,render_template, url_for
 from flask_restful import Api, Resource, reqparse, fields, marshal
-from app import api, auth,app
-from flask_httpauth import HTTPBasicAuth
+from weconnect import api, app
 
 @app.route('/')
 def index():
@@ -57,7 +64,7 @@ user_fields = {
 }
 
 class UserAPI(Resource):
-    decorators = [auth.login_required]
+
 
     def __init__(self):
         self.weparser = reqparse.RequestParser()
@@ -125,6 +132,10 @@ businesses = {
         'business_owner': 'george'        
         },
 }
+
+parser = reqparse.RequestParser()
+parser.add_argument('business')
+args = parser.parse_args()
 biz = {
                     'id': args['id'] ,
                     'name': args['name'],
@@ -135,8 +146,6 @@ biz = {
                     'business_owner': args['business_owner']        
                     }
 
-parser = reqparse.RequestParser()
-parser.add_argument('business')
 
 class Business(Resource):
     def get(self, business_id):

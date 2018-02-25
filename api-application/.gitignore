@@ -10,4 +10,7 @@ app/review_api.py
 app/test_review_api.py 
 app/test_user_api.py 
 app/user_api.py
+htmlcov/
+.coverage
+
 

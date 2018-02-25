@@ -1,5 +1,5 @@
 import os
-from app import app
+from weconnect import app
 
 if __name__ == '__main__':
     app.run()
