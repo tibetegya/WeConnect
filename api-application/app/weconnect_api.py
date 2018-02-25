@@ -125,7 +125,15 @@ businesses = {
         'business_owner': 'george'        
         },
 }
-
+biz = {
+                    'id': args['id'] ,
+                    'name': args['name'],
+                    'location': args['location'],
+                    'category': args['category'],
+                    'profile': args['profile'],
+                    'creation_date': args['date'],
+                    'business_owner': args['business_owner']        
+                    }
 
 parser = reqparse.RequestParser()
 parser.add_argument('business')
@@ -139,15 +147,7 @@ class Business(Resource):
         return '', 204
     def put(self, business_id):
         args = parser.parse_args()
-        business = {
-                    'id': args['id'] ,
-                    'name': args['name'],
-                    'location': args['location'],
-                    'category': args['category'],
-                    'profile': args['profile'],
-                    'creation_date': args['date'],
-                    'business_owner': args['business_owner']        
-                    }
+        business = biz
         businesses[business_id] = business
         return business, 201
 
@@ -159,15 +159,7 @@ class BusinessList(Resource):
         args = parser.parse_args()
         business_id = int(max(businesses.keys()).lstrip('business')) + 1
         business_id = 'business%i' % business_id
-        businesses[business_id] = {
-                    'id': args['id'] ,
-                    'name': args['name'],
-                    'location': args['location'],
-                    'category': args['category'],
-                    'profile': args['profile'],
-                    'creation_date': args['date'],
-                    'business_owner': args['business_owner']        
-                    }
+        businesses[business_id] = biz
         return businesses[business_id], 201
 
 '''
