@@ -11,8 +11,6 @@ from datetime import datetime
 from flask_restplus import Api, Resource, reqparse, fields, marshal_with
 from api_v3 import api
 from werkzeug.security import generate_password_hash,  check_password_hash
-from flask_jwt_extended import  JWTManager, jwt_required, create_access_token,  get_jwt_identity
-
 '''
 USERS API
 
@@ -55,32 +53,24 @@ class UserLogin(Resource):
         password_hash = generate_password_hash(password)
         for user in users:
             if user_name == user['user_name'] and password_hash == user['password']:
-                access_token = create_access_token(identity=user_name)
-                return access_token, 200
+                pass
         
 
 class UserLogout(Resource):
     @api.expect(user_logout_model)
     def post(self):
-        #delete token
-
-        #return confirmation
         pass
 
 class UserResetPassword(Resource):
-    @jwt_required
+ 
     def post(self):
-        #check token 
-
-        #return confirmation
         pass
 
 
 class User(Resource):
-    @jwt_required
+ 
     def get(self):
-        current_user = get_jwt_identity()
-        return jsonify(logged_in_as=current_user), 200
+        pass
 
         
 
