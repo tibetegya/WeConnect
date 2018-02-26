@@ -1,6 +1,6 @@
 import os
-from weconnect import app
+from api_v3 import app, api, jwt, blueprint
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
     

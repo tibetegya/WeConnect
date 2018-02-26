@@ -8,11 +8,12 @@
 
 from flask import Flask,jsonify, abort, make_response,render_template, url_for
 from flask_restful import Api, Resource, reqparse, fields, marshal
-from weconnect import api, app
+from weconnect import api, app, jwt, blueprint
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 '''
 USERS API
@@ -137,14 +138,14 @@ parser = reqparse.RequestParser()
 parser.add_argument('business')
 args = parser.parse_args()
 biz = {
-                    'id': args['id'] ,
-                    'name': args['name'],
-                    'location': args['location'],
-                    'category': args['category'],
-                    'profile': args['profile'],
-                    'creation_date': args['date'],
-                    'business_owner': args['business_owner']        
-                    }
+        'id': args['id'] ,
+        'name': args['name'],
+        'location': args['location'],
+        'category': args['category'],
+        'profile': args['profile'],
+        'creation_date': args['date'],
+        'business_owner': args['business_owner']        
+        }
 
 
 class Business(Resource):
@@ -172,7 +173,7 @@ class BusinessList(Resource):
         return businesses[business_id], 201
 
 '''
-BUSINESS API
+REWIEWS API
 
 '''
 

@@ -12,5 +12,6 @@ app/test_user_api.py
 app/user_api.py
 htmlcov/
 .coverage
+weconnect/
 
 
