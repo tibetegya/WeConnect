@@ -13,5 +13,11 @@ app/user_api.py
 htmlcov/
 .coverage
 weconnect/
-
+debug.log
+coverage.xml
+weconnect/business_api.py
+weconnect/review_api.py
+weconnect/tests/
+weconnect/user_api.py
+requirements.py
 
