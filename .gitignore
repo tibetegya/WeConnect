@@ -13,3 +13,4 @@ app/user_api.py
 htmlcov/
 .coverage
 weconnect/
+UI/
