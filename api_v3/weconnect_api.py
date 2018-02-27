@@ -10,7 +10,7 @@ from flask import Flask, request, jsonify
 from datetime import datetime
 from flask_restplus import Api, Resource, reqparse, fields, marshal_with
 from api_v3 import api
-from werkzeug.security import generate_password_hash,  check_password_hash
+from werkzeug.security import generate_password_hash,  check_password_hash, safe_str_cmp
 '''
 USERS API
 
@@ -89,7 +89,7 @@ business_model = api.model('business',{'business_name': fields.String('the busin
                 'location': fields.String('the business\'s location.'),
                 'category': fields.String('the business category.'),
                 'profile': fields.String('the business logo.'),
-                'creation_date': fields.Date(),
+                # 'creation_date': fields.Date(),
                 'business_owner': fields.String('user that created')})
 
 
@@ -102,19 +102,26 @@ businesses = []
 
 class Business(Resource):
 
-
-    @api.marshal_with(business_model, envelope='businesses')
-    def get(self):
+    def add_business(self, new_biz):
+        new_biz['id'] = len(businesses)+1
+        businesses.append(new_biz)
         return businesses
+
+
+    @api.marshal_with(business_model)
+    def get(self):
+        return businesses , 200
 
     @api.expect(business_model)
     def post(self):
-        new_business = api.payload
-        new_business['id'] = len(businesses)+1
-        businesses.append(new_business)
-        return {'result':'business Added'}, 201
+        self.add_business(api.payload)
+        return ({'result':'business Added'}, 201)
 
 class BusinessList(Resource):
+
+    def update_business(self, business_to_update):
+        pass
+
     def get(self, businessId):
         return businesses[businessId-1], 200
 
