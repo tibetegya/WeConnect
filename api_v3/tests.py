@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime
-from api_v3.weconnect_api import Business
+from api_v3.weconnect_api import Business, businesses
 
 class WeConnectAPITestCase(unittest.TestCase):
 
@@ -12,11 +12,10 @@ class WeConnectAPITestCase(unittest.TestCase):
                             'profile': 'pic',
                             'creation_date': datetime.now,
                             'business_owner':'george' }
-        self.businesses = { "businesses": []}
+        self.businesses = businesses
 
     def test_get(self):
-        pass
-        # self.assertEqual(self.my_business.get(), 
-        # self.businesses["businesses"].append(self.test_business))
+        self.assertEqual(self.my_business.get(), 
+                        self.businesses, msg='does not return businesses')
 
     
