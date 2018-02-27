@@ -1,11 +1,7 @@
 """
     :api_v3:
     ~~~~~
-
     A module for the WeConnect Back End Api using flask-restplus.
-
-    :copyright: (c) 2018 by George Tibetegya.
-    :license: MIT, see LICENSE for more details.
 """
 
 from flask import Flask, Blueprint  
