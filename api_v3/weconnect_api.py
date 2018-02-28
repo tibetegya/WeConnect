@@ -115,7 +115,7 @@ class Business(Resource):
     @api.expect(business_model)
     def post(self):
         self.add_business(api.payload)
-        return ({'result':'business Added'}, 201)
+        return {'result':'business Added'}, 201
 
 class BusinessList(Resource):
 

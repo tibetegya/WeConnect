@@ -20,7 +20,7 @@ api = Api(blueprint)
 app.register_blueprint(blueprint)
 
 # api = Api(app)
-app.config['SWAGGER_UI_JSONEDITOR']= True
+# app.config['SWAGGER_UI_JSONEDITOR']= True
 app.config['SECRET_KEY'] = 'super-secret'
 
 
