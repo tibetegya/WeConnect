@@ -66,13 +66,13 @@ class BusinessTestCase(ApiTestCase):
 
 
 
-class ReviewTestCase(ApiTestCase):
-    """ Tests For the Business Endpoints """
+# class ReviewTestCase(ApiTestCase):
+#     """ Tests For the Business Endpoints """
 
-    def test_get(self):
-        biz_id = 0
-        res = self.client().get('/businesses/1/reviews')
-        self.assertEqual(res.status_code, self.my_review.get(biz_id)[1] )
+#     def test_get(self):
+#         biz_id = 0
+#         res = self.client().get('/businesses/1/reviews')
+#         self.assertEqual(res.status_code, self.my_review.get(biz_id)[1] )
 
 
 
