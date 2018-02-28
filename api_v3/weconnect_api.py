@@ -7,10 +7,19 @@
 """
 
 from flask import Flask, request, jsonify
-from datetime import datetime
+import datetime 
 from flask_restplus import Api, Resource, reqparse, fields, marshal_with
-from api_v3 import api
+from api_v3 import api, app
 from werkzeug.security import generate_password_hash,  check_password_hash, safe_str_cmp
+
+import jwt
+import json
+import datetime
+from functools import wraps
+
+
+
+
 '''
 USERS API
 
@@ -32,34 +41,85 @@ user_logout_model = api.model('user_logout',{
                                 })
 
 users = []
+
+def authenticate (func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        if 'Authorization' in request.headers:
+            token = request.headers['Authorization'].split(' ')[1]
+            
+
+            if not token:
+                return {'message' : 'Token is missing!'}, 401 
+            try: 
+                data = jwt.decode(token, app.config['SECRET_KEY'])
+                user = data['user']
+                if user:
+                    for my_user in users:
+                        if user == my_user['user_name']:
+                            pass
+                            # my_user = user
+
+                              
+                
+            except:
+                return {'message' : 'Token is invalid!'} , 401
+        return func(*args, **kwargs)
+    return decorated
+
+
 class UserRegister(Resource):
-   
+
+    
     @api.expect(user_model)
     def post(self):
         new_user = api.payload
         new_user['id'] = len(users)+1
-        pw_hash = generate_password_hash(new_user['password'])
-        new_user['password'] = pw_hash 
+        # pw_hash = generate_password_hash(new_user['password'])
+        # new_user['password'] = pw_hash 
         users.append(new_user)
         return {'result':'You Are Registered'}, 201
 
 
 class UserLogin(Resource):
+    
     @api.expect(user_login_model)
+    
     def post(self):
-        #check if user exists
+        
+        
+        token = ''
+        verified = False
+
         user_name = api.payload['user_name']
         password = api.payload['password']
-        password_hash = generate_password_hash(password)
-        for user in users:
-            if user_name == user['user_name'] and password_hash == user['password']:
-                pass
         
+        for user in users:
+            if user_name == user['user_name'] and password == user['password']:
+                token = jwt.encode({
+                                    'user': user['user_name'],
+                                    'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=10)},
+                                    app.config['SECRET_KEY'])
+                verified = True
+
+        if verified:       
+            return {'token' : token.decode('UTF-8')}, 200
+        else:
+            return {'message' : 'user not found'}, 404
 
 class UserLogout(Resource):
-    @api.expect(user_logout_model)
+
+    @authenticate
     def post(self):
         pass
+        
+        
+        
+
+
+
+
+
 
 class UserResetPassword(Resource):
  
@@ -68,9 +128,13 @@ class UserResetPassword(Resource):
 
 
 class User(Resource):
- 
+    
+    @authenticate
     def get(self):
-        pass
+        
+        return users
+
+
 
         
 
@@ -102,11 +166,6 @@ businesses = []
 
 class Business(Resource):
 
-    def add_business(self, new_biz):
-        new_biz['id'] = len(businesses)+1
-        businesses.append(new_biz)
-        return businesses
-
 
     @api.marshal_with(business_model)
     def get(self):
@@ -114,27 +173,34 @@ class Business(Resource):
 
     @api.expect(business_model)
     def post(self):
-        self.add_business(api.payload)
-        return {'result':'business Added'}, 201
+        new_biz = api.payload
+        new_biz['id'] = len(businesses)+1
+        businesses.append(new_biz)
+        return businesses[-1] , 201
+
 
 class BusinessList(Resource):
-
-    def update_business(self, business_to_update):
-        pass
 
     def get(self, businessId):
         return businesses[businessId-1], 200
 
     @api.expect(business_model)
     def put(self, businessId):
-        biz_changed = api.payload
-        for biz in businesses:
-            if biz['id'] == biz_changed['id']:
-                businesses[businessId-1] = biz_changed
-                return {'result': 'business changed successfully'}, 201
+        biz_to_change = api.payload
+        found = False
+        if type(businessId) == int :
+            if businessId > len(businesses):
+                return {'result': 'bad request yoo'}, 500
+            else:
+                for biz in businesses:
+                    if biz['id'] == biz_to_change['id']:
+                        found = True
+                        businesses[businessId-1] = biz_to_change
+                        return {'result': 'business changed successfully'}, 201
+        if found == False :
+            return {'result': 'business does not exist'}, 404
 
-
-        return {'result': 'business does not exist'}, 500
+        
     
     def delete(self, businessId ):
         del businesses[businessId-1]
@@ -173,7 +239,7 @@ class Review(Resource):
         new_review = api.payload
         new_review['id'] = len(reviews)+1
         new_review['business'] = businessId
-        new_review['creation_date'] = '%s'%(datetime.now())
+        new_review['creation_date'] = str(datetime.datetime.utcnow())
 
         reviews.append(new_review)
         return {'result':'Review Added'}, 201
