@@ -15,14 +15,21 @@ class ApiTestCase(unittest.TestCase):
         self.base_url = '/api/v3'
 
         self.businesses = businesses
-        self.my_business = Business()
-        self.business_endpoint = self.base_url +'/businesses'
+        self.my_business_list = BusinessList()
+        self.business_list_endpoint = self.base_url +'/businesses'
         
         self.test_business = {'business_name':'airtel',
                             'id':1,
                             'category': 'tech',
                             'profile': 'pic',
                              }
+
+        
+        self.my_business = Business()
+        self.business_endpoint = self.base_url +'/businesses/1'
+        self.fake_business_endpoint = self.base_url +'/businesses/4'
+
+
         self.reviews = reviews
         self.my_review = Review()
         self.test_review = {'title':'airtel',
@@ -33,9 +40,6 @@ class ApiTestCase(unittest.TestCase):
                             'author':'george' }
         
 
-        self.my_business_list = BusinessList()
-        self.business_list_endpoint = self.base_url +'/businesses/1'
-        self.fake_business_list_endpoint = self.base_url +'/businesses/4'
         
         
 
@@ -44,11 +48,11 @@ class ApiTestCase(unittest.TestCase):
 
 
 
-class BusinessTestCase(ApiTestCase):
-    """ Tests For the Business Endpoints """
+class BusinessListTestCase(ApiTestCase):
+    """ Tests For the Businesses Endpoints """
 
     def test_get(self):
-        res = self.client().get(self.business_endpoint)
+        res = self.client().get(self.business_list_endpoint)
         
         self.assertEqual(res.status_code, 200 )
 
@@ -56,7 +60,7 @@ class BusinessTestCase(ApiTestCase):
     
     with app.test_request_context():
         def test_post(self):
-            res = self.client().post(self.business_endpoint, 
+            res = self.client().post(self.business_list_endpoint, 
                         data=json.dumps(self.test_business),
                         content_type='application/json')
             data = json.loads(res.get_data())
@@ -64,22 +68,26 @@ class BusinessTestCase(ApiTestCase):
             self.assertEqual(data['business_name']  , 'airtel')
             self.assertEqual(data  , self.test_business)
 
+        def test_delete(self):
+            pass
 
 
-class BusinessListTestCase(ApiTestCase):
+
+class BusinessTestCase(ApiTestCase):
+    """ Tests For the Single Business Methods and Endpoints  """
 
 
     def test_get(self):
-        res = self.client().get(self.business_list_endpoint)
+        res = self.client().get(self.business_endpoint)
         self.assertEqual(res.status_code, 200 )
 
     def test_put(self):
-        res = self.client().put(self.business_list_endpoint, 
+        res = self.client().put(self.business_endpoint, 
                         data=json.dumps(self.test_business),
                         content_type='application/json')
         self.assertEqual(res.status_code, 201)
     def test_put_bad_request(self):
-        res = self.client().put(self.fake_business_list_endpoint, 
+        res = self.client().put(self.fake_business_endpoint, 
                         data=json.dumps(self.test_business),
                         content_type='application/json')
         self.assertEqual(res.status_code, 500)

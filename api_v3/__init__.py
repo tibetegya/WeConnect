@@ -16,9 +16,13 @@ from werkzeug.security import generate_password_hash,  check_password_hash
 
 
 app = Flask(__name__)
+app.config.from_object(Config)
 blueprint = Blueprint('api', __name__, url_prefix='/api/v3')
-api = Api(blueprint)
+api = Api(blueprint, version='3', title= 'helo', description= 'i am well')
 app.register_blueprint(blueprint)
+
+
+ns = api.namespace('api', description= 'WeConnect')
 
 # api = Api(app)
 app.config['SWAGGER_UI_JSONEDITOR']= True

@@ -20,9 +20,15 @@ from functools import wraps
 
 
 
-'''
-USERS API
 
+
+
+
+
+
+'''                                     
+=========================================  USERS API  =========================================
+                                       
 '''
 
 
@@ -37,33 +43,40 @@ user_login_model = api.model('user_login',{
                                 })
  
 user_logout_model = api.model('user_logout',{
-                                'token': fields.String('Authentication Token') 
+                                'current_password': fields.String('Password'),
+                                'new_password': fields.String('New Password')  
                                 })
 
 users = []
+token_black_list = []
 
 def authenticate (func):
     @wraps(func)
     def decorated(*args, **kwargs):
-        if 'Authorization' in request.headers:
-            token = request.headers['Authorization'].split(' ')[1]
-            
-
+        token_auth_header = request.headers.get('Authorization')
+        if token_auth_header:
+            print('checking')
+            print(request.headers)
+            print('after')
+            token = token_auth_header.split(' ')[1]
             if not token:
                 return {'message' : 'Token is missing!'}, 401 
+            if token in token_black_list:
+                return {'message' : 'Token is expired!'}, 401 
             try: 
+                print('try is working')
                 data = jwt.decode(token, app.config['SECRET_KEY'])
                 user = data['user']
+                print(str(user))
                 if user:
-                    for my_user in users:
-                        if user == my_user['user_name']:
-                            pass
-                            # my_user = user
-
-                              
-                
+                    current_user = user
+                    request.data = json.loads(request.data) if len(request.data) else {}
+                    request.data['current_user'] = current_user 
+                    print('if is working')
             except:
                 return {'message' : 'Token is invalid!'} , 401
+        else:
+            return {'message' : 'unauthorised'}, 401
         return func(*args, **kwargs)
     return decorated
 
@@ -107,24 +120,24 @@ class UserLogin(Resource):
         else:
             return {'message' : 'user not found'}, 404
 
+
 class UserLogout(Resource):
 
     @authenticate
     def post(self):
-        pass
+        token = request.headers.get('Authorization').split(' ')[1]
+        me = request.data['current_user']
         
+        token_black_list.append(token)
+        return {'result': 'you are logged out'} , 200
         
-        
-
-
-
-
-
 
 class UserResetPassword(Resource):
- 
+    
+    #@authenticate
     def post(self):
-        pass
+         
+        pass 
 
 
 class User(Resource):
@@ -143,10 +156,13 @@ class User(Resource):
 
 
 
+'''                                     
+=========================================  BUSINESSES API  =========================================
+                                        
 '''
-BUSINESSES API
 
-'''
+businesses = []
+
 
 
 business_model = api.model('business',{'business_name': fields.String('the business name.'),'id': fields.Integer(1),
@@ -156,21 +172,20 @@ business_model = api.model('business',{'business_name': fields.String('the busin
                 # 'creation_date': fields.Date(),
                 'business_owner': fields.String('user that created')})
 
+class BusinessList(Resource):
 
-businesses = []
-
-# business1 = {'busines_name':'business1', 'id': 1, 'location':'kampala','profile':'logo.png',
-#             'creation_date':'21 Feb 2018','busines_owner':'george'}
-# businesses.append(business1)
-
-
-class Business(Resource):
-
-
-    @api.marshal_with(business_model)
+    @api.doc(responses={
+        400: 'Validation Error',
+        401: 'Bearer Authentication Error'
+    }, id ='get_all_businesses' )
+    #@api.header('token', type=str, description ='Authentication token')
+    #@authenticate
+    @api.marshal_with(business_model, code=200 , description='Displays a list of registered Businesses')
     def get(self):
         return businesses , 200
 
+
+    #@authenticate
     @api.expect(business_model)
     def post(self):
         new_biz = api.payload
@@ -179,7 +194,7 @@ class Business(Resource):
         return businesses[-1] , 201
 
 
-class BusinessList(Resource):
+class Business(Resource):
 
     def get(self, businessId):
         return businesses[businessId-1], 200
@@ -190,7 +205,7 @@ class BusinessList(Resource):
         found = False
         if type(businessId) == int :
             if businessId > len(businesses):
-                return {'result': 'bad request yoo'}, 500
+                return {'message': 'bad request Yo !'}, 500
             else:
                 for biz in businesses:
                     if biz['id'] == biz_to_change['id']:
@@ -203,12 +218,34 @@ class BusinessList(Resource):
         
     
     def delete(self, businessId ):
-        del businesses[businessId-1]
-        return {'message': 'business deleted'}, 201
+        biz_to_delete = api.payload
+        if type(businessId) != int :
+            return {'message': 'business id must be an integer'}, 500
+        else:
+            if businessId > len(businesses):
+                return {'message': 'bad request Yo!'}, 500
+            else:
+                for biz in businesses:
+                    if biz['id'] ==  biz_to_delete['id']:
+                            
+                            del businesses[businessId-1]
+                            return {'result': 'business deleted'}, 201
+                else:
+                    return {'message': 'We Don\' t know that business Yo!'}, 404
 
-'''
-REVIEWS API
 
+
+
+
+
+
+
+
+
+
+'''                                         
+============================================  REVIEWS API  ==============================================
+                                            
 '''
 
 
@@ -246,8 +283,8 @@ class Review(Resource):
 
 
 
-api.add_resource(BusinessList, '/businesses/<int:businessId>', endpoint="business")
-api.add_resource(Business, '/businesses', endpoint="businesses")
+api.add_resource(Business, '/businesses/<int:businessId>', endpoint="business")
+api.add_resource(BusinessList, '/businesses', endpoint="businesses")
 api.add_resource(Review, '/businesses/<int:businessId>/reviews', endpoint="reviews")
 
 api.add_resource(UserRegister, '/auth/register', endpoint="Register")
