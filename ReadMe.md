@@ -74,28 +74,33 @@ implemented using unittests (Test Driven Development)
 
 
   - [flask](flask.pocoo.org/)
-  - [flask-Restful](https://flask-restful.readthedocs.io/)
+  - [flask-Restplus](https://flask-restplus.readthedocs.io/)
   - [pytest](https://pytest.org/)
   - [virtualenv](https://virtualenv.pypa.io/en/stable/)
   - [flask](http://flask-jwt.readthedocs.io/en/latest/)
+  - Pytest
 
 ## Set Up
 
 This is the File Structure for (api-application) is as follows
 ``` bash
-  |- api-application/
-  |                 | app/|
-  |                 |     |-  __init__.py
-  |                 |     |-  business_api.py
-  |                 |     |-  test_business_api.py
-  |                 |     |-  test_user_api.py
-  |                 |     |-  user_api.py
-  |                 |
-  |                 |
-  |                 |-  .gitignore
-  |                 |-  config.py
-  |                 |-  requirements.txt
-  |                 |-  run.py
+
+| api_2/
+| api_3/
+|     |-  __init__.py
+|     |-  tests.py
+|     |-  weconnect_api.py
+|     
+|
+|-  api_v4
+|-  .gitignore
+|-  config.py
+|-  requirements.txt
+|-  app.py
+|-  LICENSE
+|-  procfile
+|-  travis.yml
+|-  UI/
 
 
 ```

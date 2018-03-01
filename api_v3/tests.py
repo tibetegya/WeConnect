@@ -99,7 +99,7 @@ class BusinessTestCase(ApiTestCase):
 
 
 # class ReviewTestCase(ApiTestCase):
-#     """ Tests For the Business Endpoints """
+#     """ Tests For the Reviews Endpoints """
 
 #     def test_get(self):
 #         biz_id = 0
