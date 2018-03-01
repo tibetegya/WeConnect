@@ -11,6 +11,7 @@ import datetime
 from flask_restplus import Api, Resource, reqparse, fields, marshal_with
 from api_v3 import api, app
 from werkzeug.security import generate_password_hash,  check_password_hash, safe_str_cmp
+from werkzeug.datastructures import FileStorage
 
 import jwt
 import json
@@ -42,10 +43,18 @@ user_login_model = api.model('user_login',{
                                 'password': fields.String('Password')
                                 })
  
-user_logout_model = api.model('user_logout',{
+password_reset_model = api.model('password_reset',{
                                 'current_password': fields.String('Password'),
                                 'new_password': fields.String('New Password')  
                                 })
+
+ 
+user_parser = reqparse.RequestParser()
+user_parser.add_argument('user_name', type=str, help='Username Must be a string',location='json',required=True)
+user_parser.add_argument('email', type=str, help='Email must be string',location='json',required=True)
+user_parser.add_argument('password', type=str, help='Password Must be a string',location='json',required=True)
+user_parser.add_argument('profile', type=FileStorage, help='photo Must be a string',location='files')
+
 
 users = []
 token_black_list = []
@@ -67,9 +76,10 @@ def authenticate (func):
                 print('try is working')
                 data = jwt.decode(token, app.config['SECRET_KEY'])
                 user = data['user']
+                current_user = user
                 print(str(user))
                 if user:
-                    current_user = user
+                    print('if starts off as working')
                     request.data = json.loads(request.data) if len(request.data) else {}
                     request.data['current_user'] = current_user 
                     print('if is working')
@@ -81,12 +91,24 @@ def authenticate (func):
     return decorated
 
 
+
 class UserRegister(Resource):
 
     
     @api.expect(user_model)
     def post(self):
-        new_user = api.payload
+
+        new_user = user_parser.parse_args()
+        if new_user['user_name'].strip() == '':
+            return {'message': 'Username Cannot be empty'} , 403
+        elif new_user['email'].strip() == '':
+            return {'message': 'Email Cannot be empty'} , 403
+        elif new_user['password'].strip() == '':
+            return {'message': 'Password Cannot be empty'} , 403
+        for u in users:
+            if new_user['user_name'] == u['user_name']:
+                return {'message': 'User Already exists'} , 403
+
         new_user['id'] = len(users)+1
         # pw_hash = generate_password_hash(new_user['password'])
         # new_user['password'] = pw_hash 
@@ -126,7 +148,6 @@ class UserLogout(Resource):
     @authenticate
     def post(self):
         token = request.headers.get('Authorization').split(' ')[1]
-        me = request.data['current_user']
         
         token_black_list.append(token)
         return {'result': 'you are logged out'} , 200
@@ -134,18 +155,25 @@ class UserLogout(Resource):
 
 class UserResetPassword(Resource):
     
-    #@authenticate
-    def post(self):
-         
-        pass 
-
-
-class User(Resource):
-    
     @authenticate
-    def get(self):
-        
-        return users
+    @api.expect(password_reset_model)
+    def post(self):
+        current_user = request.data['current_user']
+        password_payload = api.payload
+        found = False
+        for u in users:
+            if current_user == u['user_name'] and password_payload['current_password']==u['password']:
+                u['password'] = password_payload['new_password']
+                found = True
+        if found:
+            return {'message': 'password is reset'}, 201
+        else:
+            return {'message': 'user not found You cannot reset password'}, 404
+
+            
+
+
+     
 
 
 
@@ -291,6 +319,6 @@ api.add_resource(UserRegister, '/auth/register', endpoint="Register")
 api.add_resource(UserLogin, '/auth/login', endpoint="Login")
 api.add_resource(UserLogout, '/auth/logout', endpoint="Logout" )
 api.add_resource(UserResetPassword, '/auth/reset-password', endpoint="Reset-password")
-api.add_resource(User, '/auth/users', endpoint="users")
+
 
 
