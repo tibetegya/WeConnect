@@ -23,7 +23,7 @@ api = Api(blueprint, version='3', title= 'WeConnect Api', description= 'WeConnec
                                                                         And creates awareness for businesses through user reviews')
 app.register_blueprint(blueprint)
 
-app.config['SWAGGER_UI_JSONEDITOR']= True
+# app.config['SWAGGER_UI_JSONEDITOR']= True
 app.config['SECRET_KEY'] = 'george is awesome'
 
 

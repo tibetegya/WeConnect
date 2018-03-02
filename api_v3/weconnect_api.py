@@ -49,11 +49,11 @@ password_reset_model = api.model('password_reset',{
                                 })
 
  
-user_parser = reqparse.RequestParser()
-user_parser.add_argument('user_name', type=str, help='Username Must be a string',location='json',required=True)
-user_parser.add_argument('email', type=str, help='Email must be string',location='json',required=True)
-user_parser.add_argument('password', type=str, help='Password Must be a string',location='json',required=True)
-user_parser.add_argument('profile', type=FileStorage, help='photo Must be a string',location='files')
+# user_parser = reqparse.RequestParser()
+# user_parser.add_argument('user_name', type=str, help='Username Must be a string',location='json',required=True)
+# user_parser.add_argument('email', type=str, help='Email must be string',location='json',required=True)
+# user_parser.add_argument('password', type=str, help='Password Must be a string',location='json',required=True)
+# user_parser.add_argument('profile', type=FileStorage, help='photo Must be a string',location='files')
 
 
 users = []
@@ -78,11 +78,11 @@ def authenticate (func):
                 user = data['user']
                 current_user = user
                 print(str(user))
-                if user:
-                    print('if starts off as working')
-                    request.data = json.loads(request.data) if len(request.data) else {}
-                    request.data['current_user'] = current_user 
-                    print('if is working')
+                # if user:
+                #     print('if starts off as working')
+                #     request.data = json.loads(request.data) if len(request.data) else {}
+                #     request.data['current_user'] = current_user 
+                #     print('if is working')
             except:
                 return {'message' : 'Token is invalid!'} , 401
         else:
@@ -98,7 +98,7 @@ class UserRegister(Resource):
     @api.expect(user_model)
     def post(self):
 
-        new_user = user_parser.parse_args()
+        new_user = api.payload
         if new_user['user_name'].strip() == '':
             return {'message': 'Username Cannot be empty'} , 403
         elif new_user['email'].strip() == '':
@@ -193,12 +193,14 @@ businesses = []
 
 
 
-business_model = api.model('business',{'business_name': fields.String('the business name.'),'id': fields.Integer(1),
+business_model = api.model('business',{'business_name': fields.String('the business name.'),
+                # 'id': fields.Integer(1),
                 'location': fields.String('the business\'s location.'),
                 'category': fields.String('the business category.'),
-                'profile': fields.String('the business logo.'),
+                'profile': fields.String('the business logo.')
                 # 'creation_date': fields.Date(),
-                'business_owner': fields.String('user that created')})
+                # 'business_owner': fields.String('user that created')
+                })
 
 class BusinessList(Resource):
 
@@ -226,14 +228,14 @@ class Business(Resource):
 
     def get(self, businessId):
         return businesses[businessId-1], 200
-
+    
     @api.expect(business_model)
     def put(self, businessId):
         biz_to_change = api.payload
         found = False
         if type(businessId) == int :
             if businessId > len(businesses):
-                return {'message': 'bad request Yo !'}, 500
+                return {'message': 'bad request Yo !'}, 400
             else:
                 for biz in businesses:
                     if biz['id'] == biz_to_change['id']:
@@ -248,10 +250,10 @@ class Business(Resource):
     def delete(self, businessId ):
         biz_to_delete = api.payload
         if type(businessId) != int :
-            return {'message': 'business id must be an integer'}, 500
+            return {'message': 'business id must be an integer'}, 400
         else:
             if businessId > len(businesses):
-                return {'message': 'bad request Yo!'}, 500
+                return {'message': 'bad request Yo!'}, 400
             else:
                 for biz in businesses:
                     if biz['id'] ==  biz_to_delete['id']:
@@ -296,7 +298,7 @@ class Review(Resource):
             if rev['business'] == businessId:
                 biz_reviews.append(rev)
 
-        return biz_reviews
+        return biz_reviews , 200
 
     @api.expect(review_model)
     # @api.marshal_with(review_model, envelope='reviews')

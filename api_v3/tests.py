@@ -65,8 +65,14 @@ class BusinessListTestCase(ApiTestCase):
                         content_type='application/json')
             data = json.loads(res.get_data())
             self.assertEqual(res.status_code, 201 )
+
+    with app.test_request_context():
+        def test_business_added_name_on_post(self):
+            res = self.client().post(self.business_list_endpoint, 
+                        data=json.dumps(self.test_business),
+                        content_type='application/json')
+            data = json.loads(res.get_data())
             self.assertEqual(data['business_name']  , 'airtel')
-            self.assertEqual(data  , self.test_business)
 
         def test_delete(self):
             pass
@@ -78,19 +84,30 @@ class BusinessTestCase(ApiTestCase):
 
 
     def test_get(self):
+        """ Test For that businesses are retrieved  """
+
         res = self.client().get(self.business_endpoint)
         self.assertEqual(res.status_code, 200 )
 
+
+
     def test_put(self):
+        """ Test For the Single Business has been added  """
+
+
         res = self.client().put(self.business_endpoint, 
                         data=json.dumps(self.test_business),
                         content_type='application/json')
         self.assertEqual(res.status_code, 201)
+
+
     def test_put_bad_request(self):
+        """ Test For the Single Businessid that is out of range  """
+
         res = self.client().put(self.fake_business_endpoint, 
                         data=json.dumps(self.test_business),
                         content_type='application/json')
-        self.assertEqual(res.status_code, 500)
+        self.assertEqual(res.status_code, 400)
 
 
 
@@ -98,22 +115,14 @@ class BusinessTestCase(ApiTestCase):
    
 
 
-# class ReviewTestCase(ApiTestCase):
-#     """ Tests For the Reviews Endpoints """
+class ReviewTestCase(ApiTestCase):
+    """ Tests For the Reviews Endpoints """
 
-#     def test_get(self):
-#         biz_id = 0
-#         res = self.client().get('/businesses/1/reviews')
-#         self.assertEqual(res.status_code, self.my_review.get(biz_id)[1] )
+    def test_get(self):
+        """ Test that there are no business reviews """
+        res = self.client().get('/businesses/1/reviews')
+        self.assertEqual(res.status_code, 404 )
 
-# class BusinessListTestCase(ApiTestCase):
-
-#     def test_get(self):
-#         self.test_business_id = 1
-#         self.businesses.append(self.test_business)
-#         res = self.client().get('/api/v3/businesses/1')
-        
-#         self.assertEqual(res.status_code, self.my_business_list.get(self.test_business_id)[1] )
 
 
 
