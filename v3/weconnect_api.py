@@ -9,10 +9,9 @@
 from flask import Flask, request, jsonify
 import datetime 
 from flask_restplus import Api, Resource, reqparse, fields, marshal_with
-from api_v3 import api, app
+from v3 import api, app
 from werkzeug.security import generate_password_hash,  check_password_hash, safe_str_cmp
 from werkzeug.datastructures import FileStorage
-
 import jwt
 import json
 import datetime
