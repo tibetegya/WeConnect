@@ -18,5 +18,5 @@ migrations/
 api_v4/
 requirements2.txt
 manage.py
-
+.vscode
 
