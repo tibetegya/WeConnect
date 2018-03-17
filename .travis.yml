@@ -11,7 +11,7 @@ install:
   
 script:
   - pytest v3/tests.py
-  - coverage run app.py
+  - coverage run v3
   - coverage report -m
   - coverage html
 
