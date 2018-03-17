@@ -63,7 +63,7 @@ class BusinessListTestCase(ApiTestCase):
             res = self.client().post(self.business_list_endpoint, 
                         data=json.dumps(self.test_business),
                         content_type='application/json')
-            data = json.loads(res.get_data())
+            #data = json.loads(res.get_data())
             self.assertEqual(res.status_code, 201 )
 
     with app.test_request_context():
