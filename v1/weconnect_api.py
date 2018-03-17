@@ -9,7 +9,7 @@
 from flask import Flask, request, jsonify
 import datetime 
 from flask_restplus import Api, Resource, reqparse, fields, marshal_with
-from v3 import api, app
+from v1 import api, app
 from werkzeug.security import generate_password_hash,  check_password_hash, safe_str_cmp
 from werkzeug.datastructures import FileStorage
 import jwt
@@ -75,7 +75,7 @@ def authenticate (func):
                 print('try is working')
                 data = jwt.decode(token, app.config['SECRET_KEY'])
                 user = data['user']
-                current_user = user
+                #current_user = user
                 print(str(user))
                 # if user:
                 #     print('if starts off as working')
