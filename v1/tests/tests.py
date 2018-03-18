@@ -3,7 +3,7 @@ import flask
 import json
 from datetime import datetime
 from v1 import api, app
-from v1.weconnect_api import Business, BusinessList, Review, businesses, reviews
+from ..weconnect_api import Business, BusinessList, Review, businesses, reviews
 
 class ApiTestCase(unittest.TestCase):
     
