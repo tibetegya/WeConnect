@@ -18,7 +18,7 @@ from functools import wraps
 
 
 from v1 import api, app
-from reviews_api import Review, reviews
+from .reviews_api import Review, reviews
 
 
 
