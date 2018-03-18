@@ -1,6 +1,6 @@
 from flask_restplus import Api, Resource, reqparse, fields, marshal_with
 import datetime 
-from v1 import api, app
+from v1 import api
 
 
 

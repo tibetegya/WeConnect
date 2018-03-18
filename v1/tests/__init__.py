@@ -2,7 +2,8 @@ import unittest
 import flask 
 import json
 from datetime import datetime
-from v1 import api, app
+from app import app
+from v1 import api
 from ..weconnect_api import Business, BusinessList, Review, businesses, reviews
 
 class ApiTestCase(unittest.TestCase):

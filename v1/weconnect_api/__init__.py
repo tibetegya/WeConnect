@@ -1,4 +1,4 @@
-from v1 import api, app
+from v1 import api
 from .reviews_api import Review, reviews
 from .business_api import Business, BusinessList, businesses
 from .users_api import UserRegister, UserLogin, UserLogout, UserResetPassword
