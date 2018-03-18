@@ -10,7 +10,7 @@ install:
   - pip install -r requirements.txt
   
 script:
-  - pytest v1/tests.py
+  - pytest v1/tests/.
   
 
 after_success:
