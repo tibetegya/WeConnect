@@ -1,5 +1,9 @@
 # virtual environment folder
+<<<<<<< HEAD
 .env/
+=======
+env/
+>>>>>>> api-v4
 
 # generated folder after running the application 
 app/__pycache__/
@@ -13,4 +17,10 @@ app/user_api.py
 htmlcov/
 .coverage
 weconnect/
+env2/
+migrations/
+api_v4/
+requirements2.txt
+manage.py
+.vscode
 

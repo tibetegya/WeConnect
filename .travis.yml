@@ -8,7 +8,11 @@ env:
   
 install:
   - pip install -r requirements.txt
- 
+  
 script:
-  - pytest api_v3/tests.py
+  - pytest v1/tests/.
+  
+
+after_success:
+  - coveralls
 
