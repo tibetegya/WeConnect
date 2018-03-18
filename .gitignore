@@ -1,9 +1,5 @@
 # virtual environment folder
-<<<<<<< HEAD
-.env/
-=======
 env/
->>>>>>> api-v4
 
 # generated folder after running the application 
 app/__pycache__/
