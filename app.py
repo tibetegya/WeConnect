@@ -11,7 +11,7 @@ app.config['SWAGGER_UI_JSONEDITOR']= True
 app.config['SECRET_KEY'] = 'george is awesome'
 
 
-app.register_blueprint(api_v1)
+app.register_blueprint(api_v1, url_prefix='/api/v1')
 
 
 if __name__ == '__main__':
