@@ -12,7 +12,7 @@ install:
 # command to run tests    
 script:
   - pytest v1/tests/.
-  - coverage run --source='.' --omit='app.py' manage.py test
+  - coverage run --source='.' --omit='app.py' manage.py test  
   - coverage report
 
 # generate code climate report  
