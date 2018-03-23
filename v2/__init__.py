@@ -8,4 +8,4 @@ v2_api = Api(v2_blueprint, version='2', title= 'WeConnect Api', description= 'We
                                                                         \n and individuals together \
                                                                         And creates awareness for businesses through user reviews')
 
-#from v2 import weconnect_api, tests
+#from v2 import models, tests

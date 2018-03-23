@@ -15,6 +15,7 @@ db = SQLAlchemy()
 app.config.from_object(Config)
 app.config['SWAGGER_UI_JSONEDITOR']= True
 app.config['SECRET_KEY'] = 'george is awesome'
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://localhost/weconnectdb"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
