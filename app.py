@@ -3,7 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 from config import Config
-from v1 import blueprint as api_v1
+# from v1 import blueprint as api_v1
 from v2 import v2_blueprint as api_v2
 
 
@@ -20,7 +20,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
-app.register_blueprint(api_v1, url_prefix='/api/v1')
+# app.register_blueprint(api_v1, url_prefix='/api/v1')
 app.register_blueprint(api_v2, url_prefix='/api/v2')
 
 
