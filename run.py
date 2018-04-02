@@ -1,14 +1,14 @@
 import os
 from flask import Flask  
-from flask_sqlalchemy import SQLAlchemy
-from config import Config
-from v2 import v2_blueprint as api_v2
+from config import Config, app_config
+from apis.v2 import db 
+from apis.v2 import blueprint as api_v2
 
 
 app = Flask(__name__)
-db = SQLAlchemy()
-db.init_app(app)
+app.config.from_object(app_config['development'])
 
+db.init_app(app)
 app.register_blueprint(api_v2, url_prefix='/api/v2')
 
 
