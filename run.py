@@ -8,7 +8,6 @@ from apis.v2 import blueprint as api_v2
 app = Flask(__name__)
 app.config.from_object(app_config['development'])
 
-db.init_app(app)
 app.register_blueprint(api_v2, url_prefix='/api/v2')
 
 

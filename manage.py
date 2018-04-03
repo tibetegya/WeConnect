@@ -1,8 +1,16 @@
 import unittest
 from flask_script import Manager
-from app import app
+from run import app
 
 manager = Manager(app)
+
+@manage.command
+def migrator():
+    os.system('set FLASK_APP=run')
+        
+    os.system('flask db init')
+    # os.system('flask db migrate')
+    # os.system('flask db upgrade')
 
 @manager.command
 def test():
