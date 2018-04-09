@@ -4,7 +4,7 @@ import datetime
 
 # local imports  
 from apis.db import db
-from apis.v2 import api
+from apis.v2 import ns as api
 from apis.v2.weconnect_api.users_api import authenticate
 from apis.v2.models.business import BusinessModel
 
@@ -35,7 +35,7 @@ class BusinessList(Resource):
         businesses = BusinessModel.business_as_dict()
         return businesses , 200
 
-
+    api.doc('post biz')
     #@authenticate
     @api.expect(business_model)
     def post(self):
