@@ -1,5 +1,6 @@
 import unittest
 from run import app
+from apis.db import db
 
 
 class ApiTestCase(unittest.TestCase):

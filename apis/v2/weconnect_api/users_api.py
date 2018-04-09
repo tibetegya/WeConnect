@@ -10,7 +10,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 # local imports
 from run import app
-from apis.v2 import api, db
+from apis.db import db
+from apis.v2 import api
 from apis.v2.models.user import User
 from apis.v2.models.blacklist import Blacklist
 

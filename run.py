@@ -1,8 +1,8 @@
 import os
 from flask import Flask  
 from config import Config, app_config
-from apis.v2 import db 
-from apis.v2 import blueprint as api_v2
+from apis.db import db
+from apis.v2 import api_v2
 
 
 app = Flask(__name__)

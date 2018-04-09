@@ -1,5 +1,5 @@
 # local imports
-from apis.v2 import db
+from apis.db import db
 
 
 class ReviewModel(db.Model):

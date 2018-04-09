@@ -3,7 +3,8 @@ from flask_restplus import Api, Resource, reqparse, fields, marshal_with
 import datetime 
 
 # local imports  
-from apis.v2 import api, db
+from apis.db import db
+from apis.v2 import api
 from apis.v2.weconnect_api.users_api import authenticate
 from apis.v2.models.business import BusinessModel
 

@@ -1,5 +1,5 @@
 # local imports
-from apis.v2 import db
+from apis.db import db
 
 class BusinessModel(db.Model):
     """Class to create a Business class object"""
