@@ -1,15 +1,15 @@
 import unittest
 import flask 
 import json
-from apis.v2 import api
-from run import app
+from apis import app
+from apis.v2 import ns as api
 from apis.v2.tests import ApiTestCase
 
 class BusinessListTestCase(ApiTestCase):
     """ Tests For the Businesses Endpoints """
 
     def test_get(self):
-        res = self.client().get(self.business_list_endpoint)
+        res = self.client().get(self.base_url+self.business_list_endpoint)
         
         self.assertEqual(res.status_code, 200 )
 
@@ -17,7 +17,7 @@ class BusinessListTestCase(ApiTestCase):
     
     with app.test_request_context():
         def test_post(self):
-            res = self.client().post(self.business_list_endpoint, 
+            res = self.client().post(self.base_url+self.business_list_endpoint, 
                         data=json.dumps(self.test_business),
                         content_type='application/json')
             #data = json.loads(res.get_data())
@@ -25,7 +25,7 @@ class BusinessListTestCase(ApiTestCase):
 
     with app.test_request_context():
         def test_business_added_name_on_post(self):
-            res = self.client().post(self.business_list_endpoint, 
+            res = self.client().post(self.base_url+self.business_list_endpoint, 
                         data=json.dumps(self.test_business),
                         content_type='application/json')
             data = json.loads(res.get_data())
@@ -43,7 +43,7 @@ class BusinessTestCase(ApiTestCase):
     def test_get(self):
         """ Test For that businesses are retrieved  """
 
-        res = self.client().get(self.business_endpoint)
+        res = self.client().get(self.base_url+self.business_endpoint)
         self.assertEqual(res.status_code, 200 )
 
 
@@ -52,7 +52,7 @@ class BusinessTestCase(ApiTestCase):
         """ Test For the Single Business has been added  """
 
 
-        res = self.client().put(self.business_endpoint, 
+        res = self.client().put(self.base_url+self.business_endpoint, 
                         data=json.dumps(self.test_business),
                         content_type='application/json')
         self.assertEqual(res.status_code, 201)
@@ -61,7 +61,8 @@ class BusinessTestCase(ApiTestCase):
     def test_put_bad_request(self):
         """ Test For the Single Businessid that is out of range  """
 
-        res = self.client().put(self.fake_business_endpoint, 
+
+        res = self.client().put(self.base_url+ self.fake_business_endpoint, 
                         data=json.dumps(self.test_business),
                         content_type='application/json')
         self.assertEqual(res.status_code, 400)

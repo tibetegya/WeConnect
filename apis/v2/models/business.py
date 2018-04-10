@@ -1,5 +1,5 @@
 # local imports
-from apis.db import db
+from apis import db
 
 class BusinessModel(db.Model):
     """Class to create a Business class object"""
@@ -32,3 +32,4 @@ class BusinessModel(db.Model):
         """Represent the business as a dict"""
 
         return {b.name: getattr(self, b.name) for b in self.__table__.columns}
+

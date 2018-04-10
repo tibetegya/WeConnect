@@ -3,7 +3,7 @@ import datetime
 
 # loacl imports
 from apis.db import db
-from apis.v2 import api
+from apis import ns as api
 from apis.v2.models.review import ReviewModel
 
 

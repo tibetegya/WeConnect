@@ -4,7 +4,7 @@ import datetime
 
 # local imports  
 from apis.db import db
-from apis.v2 import ns as api
+from apis import ns as api
 from apis.v2.weconnect_api.users_api import authenticate
 from apis.v2.models.business import BusinessModel
 

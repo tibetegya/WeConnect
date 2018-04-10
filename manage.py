@@ -1,12 +1,23 @@
 import unittest
+import os
 from flask_script import Manager
-from run import app
+from flask_migrate import Migrate, MigrateCommand
+from apis import app, db
+from apis.v2.models.blacklist import Blacklist
+from apis.v2.models.business import BusinessModel
+from apis.v2.models.review import ReviewModel
+from apis.v2.models.user import User
 
+
+
+migrate = Migrate(app, db)
 manager = Manager(app)
 
-@manage.command
+manager.add_command('db', MigrateCommand)
+
+@manager.command
 def migrator():
-    os.system('set FLASK_APP=run')
+    os.system('export FLASK_APP=run')
         
     os.system('flask db init')
     # os.system('flask db migrate')

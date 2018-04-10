@@ -9,9 +9,9 @@ from functools import wraps
 from flask_sqlalchemy import SQLAlchemy
 
 # local imports
-from run import app
-from apis.db import db
-from apis.v2 import api
+from apis import app
+from apis import db
+from apis import ns as api
 from apis.v2.models.user import User
 from apis.v2.models.blacklist import Blacklist
 
@@ -132,7 +132,7 @@ class UserLogin(Resource):
         if db_user != None: 
             if check_password_hash(db_user.password_hash, password) :
                 token = jwt.encode({
-                                        'user': user['user_name'],
+                                        'user': db_user,
                                         'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=10)},
                                         app.config['SECRET_KEY'])
                 verified = True
