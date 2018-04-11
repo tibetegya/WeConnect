@@ -2,6 +2,7 @@ from werkzeug.security import generate_password_hash
 
 # local imports
 from apis import db
+from apis.v2.models.business import BusinessModel
 
 class User(db.Model):
 
@@ -14,8 +15,8 @@ class User(db.Model):
     creation_date = db.Column(db.DateTime, default=db.func.current_timestamp())
     update_date = db.Column(db.DateTime, default=db.func.current_timestamp(
     ), onupdate=db.func.current_timestamp())
-    # businesses = db.relationship(
-    #     'Business', order_by='Business.id', cascade='all, delete-orphan')
+    businesses = db.relationship(
+        'BusinessModel', order_by='BusinessModel.id', cascade='all, delete-orphan')
 
     def __init__(self, user_name, email, password):
         self.email = email
@@ -25,7 +26,4 @@ class User(db.Model):
     def __repr__(self):
         return '<User: {}>'.format(self.username)
 
-    def user_as_dict(self):
-        """Represent the user as a dict"""
 
-        return {u.name: getattr(self, u.name) for u in self.__table__.columns}

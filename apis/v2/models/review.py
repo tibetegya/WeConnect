@@ -1,5 +1,6 @@
 # local imports
 from apis import db
+from apis.v2.models.user import *
 
 
 class ReviewModel(db.Model):
@@ -11,7 +12,7 @@ class ReviewModel(db.Model):
     title = db.Column(db.String(50), unique=True, nullable=False)
     body = db.Column(db.String(256), nullable=False)
     business = db.Column(db.Integer, db.ForeignKey('businesses.id'))
-    # author = db.Column(db.Integer, db.ForeignKey('users.id'))
+    author = db.Column(db.Integer, db.ForeignKey('users.id'))
     creation_date = db.Column(db.DateTime, default=db.func.current_timestamp())
     update_date = db.Column(db.DateTime, default=db.func.current_timestamp(
     ), onupdate=db.func.current_timestamp())
@@ -25,7 +26,3 @@ class ReviewModel(db.Model):
     def __repr__(self):
         return '<Review: {}>'.format(self.name)
 
-    def review_as_dict(self):
-        """Represent the review as a dict"""
-
-        return {r.name: getattr(self, r.name) for r in self.__table__.columns}

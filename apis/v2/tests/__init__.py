@@ -11,9 +11,10 @@ class ApiTestCase(unittest.TestCase):
         self.app.testing = True
         self.client = self.app.test_client
         self.base_url = '/api/v2'
-        self.business_list_endpoint = '/businesses/1'
-        self.business_endpoint = '/businesses'
-        self.fake_business_endpoint = '/businesses/9'
+        db.create_all()
+        self.business_list_endpoint = '/businesses'
+        self.business_endpoint = '/businesses/1'
+        self.fake_business_endpoint = '/businesses/900'
         
         self.test_business = {
                 'business_name': 'airtel',

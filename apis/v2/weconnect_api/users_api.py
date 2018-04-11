@@ -132,7 +132,7 @@ class UserLogin(Resource):
         if db_user != None: 
             if check_password_hash(db_user.password_hash, password) :
                 token = jwt.encode({
-                                        'user': db_user,
+                                        'user': user_name,
                                         'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=10)},
                                         app.config['SECRET_KEY'])
                 verified = True

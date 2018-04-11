@@ -1,7 +1,7 @@
 import unittest
 import flask 
 import json
-from apis.v2 import api
+from apis import api
 from run import app
 from apis.v2.tests import ApiTestCase
 

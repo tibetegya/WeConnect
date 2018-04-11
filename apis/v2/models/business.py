@@ -1,5 +1,6 @@
 # local imports
 from apis import db
+from apis.v2.models.review import *
 
 class BusinessModel(db.Model):
     """Class to create a Business class object"""
@@ -11,12 +12,12 @@ class BusinessModel(db.Model):
     category = db.Column(db.String(200), nullable=False)
     location = db.Column(db.String(200), nullable=False)        
     profile = db.Column(db.String(256))
-    # created_by = db.Column(db.Integer, db.ForeignKey('users.id'))
+    created_by = db.Column(db.Integer, db.ForeignKey('users.id'))
     creation_date = db.Column(db.DateTime, default=db.func.current_timestamp())
     update_date = db.Column(db.DateTime, default=db.func.current_timestamp(
     ), onupdate=db.func.current_timestamp())
-    # reviews = db.relationship(
-    #     'Review', order_by='Review.id', cascade='all, delete-orphan')
+    reviews = db.relationship(
+        'ReviewModel', order_by='ReviewModel.id', cascade='all, delete-orphan')
 
     def __init__(self, business_name, category, location, profile):
         self.business_name = business_name
@@ -26,10 +27,10 @@ class BusinessModel(db.Model):
         # self.created_by = session["user_id"]
 
     def __repr__(self):
-        return '<Business: {}>'.format(self.name)
+        return '<Business: {}>'.format(self.business_name)
 
     def business_as_dict(self):
         """Represent the business as a dict"""
 
+        # return {self.__table__.columns}
         return {b.name: getattr(self, b.name) for b in self.__table__.columns}
-

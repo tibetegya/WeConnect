@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, jsonify
 from flask_restplus import Api, Resource, reqparse, fields, marshal_with
 import datetime 
 
@@ -28,14 +28,13 @@ class BusinessList(Resource):
         400: 'Validation Error',
         401: 'Bearer Authentication Error'
     }, id ='get_all_businesses' )
-    @api.header('token', type=str, description ='Authentication token')
+    # @api.header('token', type=str, description ='Authentication token')
     #@authenticate
     @api.marshal_with(business_model, code=200 , description='Displays a list of registered Businesses')
     def get(self):
         # businesses = BusinessModel.business_as_dict()
         businesses = BusinessModel.query.all()
-        businesses_returned = businesses.business_as_dict
-        return businesses_returned , 200
+        return businesses , 200
 
     api.doc('post biz')
     #@authenticate
@@ -52,7 +51,9 @@ class BusinessList(Resource):
 
         # Return for added business
         added_business = BusinessModel.query.filter_by(business_name=new_biz['business_name']).first()
-        return added_business.business_as_dict() , 201
+        business_list = added_business.business_as_dict()
+        
+        return jsonify(business_list) , 201
 
 
 class Business(Resource):

@@ -26,7 +26,7 @@ class Review(Resource):
         # get all reviews where the business id is businessId
         biz_reviews = ReviewModel.query.filter_by(business=businessId).all()
         if biz_reviews:
-            return biz_reviews.review_as_dict() , 200
+            return biz_reviews , 200
         else:
             return {'message': 'business has no reviews'}, 404
 
