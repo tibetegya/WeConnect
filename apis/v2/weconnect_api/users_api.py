@@ -11,7 +11,7 @@ from flask_sqlalchemy import SQLAlchemy
 # local imports
 from apis import app
 from apis import db
-from apis import ns as api
+from apis import api
 from apis.v2.models.user import User
 from apis.v2.models.blacklist import Blacklist
 

@@ -2,8 +2,8 @@ from flask_restplus import Api, Resource, reqparse, fields, marshal_with
 import datetime 
 
 # loacl imports
-from apis.db import db
-from apis import ns as api
+from apis import db
+from apis import api
 from apis.v2.models.review import ReviewModel
 
 

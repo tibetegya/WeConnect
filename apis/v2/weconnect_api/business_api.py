@@ -3,8 +3,8 @@ from flask_restplus import Api, Resource, reqparse, fields, marshal_with
 import datetime 
 
 # local imports  
-from apis.db import db
-from apis import ns as api
+from apis import db
+from apis import api
 from apis.v2.weconnect_api.users_api import authenticate
 from apis.v2.models.business import BusinessModel
 
@@ -32,8 +32,10 @@ class BusinessList(Resource):
     #@authenticate
     @api.marshal_with(business_model, code=200 , description='Displays a list of registered Businesses')
     def get(self):
-        businesses = BusinessModel.business_as_dict()
-        return businesses , 200
+        # businesses = BusinessModel.business_as_dict()
+        businesses = BusinessModel.query.all()
+        businesses_returned = businesses.business_as_dict
+        return businesses_returned , 200
 
     api.doc('post biz')
     #@authenticate

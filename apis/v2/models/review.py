@@ -17,8 +17,8 @@ class ReviewModel(db.Model):
     ), onupdate=db.func.current_timestamp())
 
     def __init__(self, title, body, business):
-        self.name = name
-        self.body = description
+        self.title = title
+        self.body = body
         self.business = business
         # self.author = session["user_id"]
 

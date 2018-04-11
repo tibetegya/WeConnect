@@ -14,8 +14,8 @@ class User(db.Model):
     creation_date = db.Column(db.DateTime, default=db.func.current_timestamp())
     update_date = db.Column(db.DateTime, default=db.func.current_timestamp(
     ), onupdate=db.func.current_timestamp())
-    businesses = db.relationship(
-        'Business', order_by='Business.id', cascade='all, delete-orphan')
+    # businesses = db.relationship(
+    #     'Business', order_by='Business.id', cascade='all, delete-orphan')
 
     def __init__(self, user_name, email, password):
         self.email = email

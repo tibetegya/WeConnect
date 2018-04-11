@@ -15,8 +15,8 @@ class BusinessModel(db.Model):
     creation_date = db.Column(db.DateTime, default=db.func.current_timestamp())
     update_date = db.Column(db.DateTime, default=db.func.current_timestamp(
     ), onupdate=db.func.current_timestamp())
-    reviews = db.relationship(
-        'Review', order_by='Review.id', cascade='all, delete-orphan')
+    # reviews = db.relationship(
+    #     'Review', order_by='Review.id', cascade='all, delete-orphan')
 
     def __init__(self, business_name, category, location, profile):
         self.business_name = business_name

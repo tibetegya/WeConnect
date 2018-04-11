@@ -13,13 +13,13 @@ api = Api(api_v2, version='2', title= 'WeConnect Api', description= 'WeConnect p
                                                                         \n and individuals together \
                                                                         And creates awareness for businesses through user reviews')
 
-ns = api.namespace('v2', description='WeConnect endpoints')
+# ns = api.namespace('v2', description='WeConnect endpoints')
 
 
 
 app = Flask(__name__)
 app.config.from_object(app_config['development'])
-app.register_blueprint(api_v2, url_prefix='/api')
+app.register_blueprint(api_v2, url_prefix='/api/v2')
 
 
 
@@ -28,11 +28,11 @@ app.register_blueprint(api_v2, url_prefix='/api')
 db = SQLAlchemy(app)
 
 from apis.v2.models.blacklist import Blacklist
-from apis.v2.models.business import BusinessModel
 from apis.v2.models.review import ReviewModel
+from apis.v2.models.business import BusinessModel
 from apis.v2.models.user import User
 from apis.v2 import weconnect_api
-db.create_all()
+# db.create_all()
 
 
 # manager = Manager(app)
