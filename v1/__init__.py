@@ -21,5 +21,3 @@ api = Api(api_v1, version='1', title= 'WeConnect Api', description= 'WeConnect p
 app.register_blueprint(api_v1, url_prefix='/api/v1')
 
 from v1 import weconnect_api, tests
-
-return app
