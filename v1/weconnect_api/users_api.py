@@ -7,7 +7,7 @@ import jwt
 import json
 import datetime
 from functools import wraps
-from app import app
+from ../../app import app
 from v1 import api
 
 
