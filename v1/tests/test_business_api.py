@@ -2,7 +2,7 @@ import unittest
 import flask 
 import json
 from v1 import api
-from app import app
+from v1 import app
 from ..tests import ApiTestCase
 
 class BusinessListTestCase(ApiTestCase):
