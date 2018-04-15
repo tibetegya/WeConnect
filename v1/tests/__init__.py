@@ -2,7 +2,7 @@ import unittest
 import flask 
 import json
 from datetime import datetime
-from app import app
+from v1 import app
 from v1 import api
 from ..weconnect_api import Business, BusinessList, Review, businesses, reviews
 
