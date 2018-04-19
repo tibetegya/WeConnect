@@ -24,6 +24,6 @@ class User(db.Model):
         self.password_hash = generate_password_hash(password)
 
     def __repr__(self):
-        return '<User: {}>'.format(self.username)
+        return '<User: {}>'.format(self.user_name)
 
 

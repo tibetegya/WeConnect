@@ -43,34 +43,35 @@ password_reset_model = api.model('password_reset',{
 
 def authenticate (func):
     @wraps(func)
+    
     def decorated(*args, **kwargs):
         token_auth_header = request.headers.get('Authorization')
         if token_auth_header:
-            print('checking')
-            print(request.headers)
-            print('after')
+
             token = token_auth_header.split(' ')[1]
             if not token:
+                print ('its in not token')
                 return {'message' : 'Token is missing!'}, 401 
             
             token_blacklisted = Blacklist.query.filter_by(token=token).first()
 
             if token_blacklisted:
+                print ('its in Blacklisted')
                 return {'message' : 'Token is expired!'}, 401 
             try: 
-                print('try is working')
                 data = jwt.decode(token, app.config['SECRET_KEY'])
-                user = data['user']
-                current_user = user
-                print(str(user))
-                if user:
-                    print('if starts off as working')
+                user_id = data['user']
+                # current_user = user
+                current_user = User.query.get(user_id)
+                if current_user:
                     request.data = json.loads(request.data) if len(request.data) else {}
                     request.data['current_user'] = current_user 
-                    print('if is working')
+                    
             except:
+                print ('its in except')
                 return {'message' : 'Token is invalid!'} , 401
         else:
+            print ('its in else')
             return {'message' : 'unauthorised'}, 401
         return func(*args, **kwargs)
     return decorated
@@ -117,7 +118,6 @@ class UserRegister(Resource):
 class UserLogin(Resource):
     
     @api.expect(user_login_model)
-    
     def post(self):
         
         
@@ -132,7 +132,7 @@ class UserLogin(Resource):
         if db_user != None: 
             if check_password_hash(db_user.password_hash, password) :
                 token = jwt.encode({
-                                        'user': user_name,
+                                        'user': db_user.id,
                                         'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=10)},
                                         app.config['SECRET_KEY'])
                 verified = True

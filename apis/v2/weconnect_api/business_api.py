@@ -49,11 +49,11 @@ class BusinessList(Resource):
         db.session.add(new_business)
         db.session.commit()
 
-        # Return for added business
-        added_business = BusinessModel.query.filter_by(business_name=new_biz['business_name']).first()
-        business_list = added_business.business_as_dict()
+        # # Return for added business
+        # added_business = BusinessModel.query.filter_by(business_name=new_biz['business_name']).first()
+        # business_list = added_business.business_as_dict()
         
-        return jsonify(business_list) , 201
+        return {'message': 'business added sucessfully'} , 201
 
 
 class Business(Resource):
@@ -86,7 +86,7 @@ class Business(Resource):
             if biz_to_change['profile'] != business_to_change.profile:
                 business_to_change.profile = biz_to_change['profile']
             
-            db.session.add(business_to_change)
+            # db.session.add(business_to_change)
             db.session.commit
 
 
