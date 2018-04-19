@@ -13,6 +13,11 @@ api = Api(api_v2, version='2', title= 'WeConnect Api', description= 'WeConnect p
                                                                         \n and individuals together \
                                                                         And creates awareness for businesses through user reviews')
 
+# api_v1 = Blueprint('api', __name__)
+# api = Api(api_v1, version='1', title= 'WeConnect Api', description= 'WeConnect provides a platform that brings businesses \
+#                                                                         \n and individuals together \
+#                                                                         And creates awareness for businesses through user reviews')
+
 # ns = api.namespace('v2', description='WeConnect endpoints')
 
 
@@ -20,6 +25,7 @@ api = Api(api_v2, version='2', title= 'WeConnect Api', description= 'WeConnect p
 app = Flask(__name__)
 app.config.from_object(app_config['development'])
 app.register_blueprint(api_v2, url_prefix='/api/v2')
+# app.register_blueprint(api_v2, url_prefix='/api/v1')
 
 
 
