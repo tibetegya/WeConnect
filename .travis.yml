@@ -18,13 +18,13 @@ before_script:
 # command to run tests    
 script:
   - pytest apis/v2/tests/.
-  - coverage run --source='.' --omit='run.py' manage.py test  
+  - coverage run --source='apis/' manage.py test  
   - coverage report
 
 # generate code climate report  
 after_script:
   - codeclimate-test-reporter
-  - coveralls
+
 
 # push report to coveralls.io
 after_success:
