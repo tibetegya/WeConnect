@@ -19,6 +19,7 @@ from apis.v2.models.business import BusinessModel
 business_model = api.model('business',{'business_name': fields.String('the business name.'),
                 'category': fields.String('the business category.'),
                 'location': fields.String('the business\'s location.'),
+                'id': fields.Integer(),
                 'profile': fields.String('the business logo.')
                 })
 
@@ -69,11 +70,13 @@ class Business(Resource):
     def put(self, businessId):
         biz_to_change = api.payload
         business_to_change = BusinessModel.query.get(businessId)
+        
         if business_to_change:
+            
             # change business name
             if biz_to_change['business_name'] != business_to_change.business_name:
                 business_to_change.business_name = biz_to_change['business_name']
-
+                
             # change category    
             if biz_to_change['category'] != business_to_change.category:
                 business_to_change.category = biz_to_change['category']
@@ -87,7 +90,7 @@ class Business(Resource):
                 business_to_change.profile = biz_to_change['profile']
             
             # db.session.add(business_to_change)
-            db.session.commit
+            db.session.commit()
 
 
             return {'result': 'business changed successfully'}, 201
@@ -98,16 +101,14 @@ class Business(Resource):
         
     
     def delete(self, businessId ):
-        if type(businessId) != int :
-            return {'message': 'business id must be an integer'}, 400
+
+        check_business = BusinessModel.query.get(businessId)
+        if check_business == None:
+            return {'message': 'that business does not exist'}, 400
         else:
-            check_business = BusinessModel.query.get(businessId)
-            if check_business == None:
-                return {'message': 'that business does not exist'}, 400
-            else:
-                
-                db.session.delete(check_business)
-                db.session.commit()            
             
-                return {'result': 'business deleted'}, 201
-                
+            db.session.delete(check_business)
+            db.session.commit()            
+        
+            return {'result': 'business deleted'}, 201
+            

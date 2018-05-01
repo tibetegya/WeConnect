@@ -41,39 +41,35 @@ password_reset_model = api.model('password_reset',{
 
 
 
-def authenticate (func):
-    @wraps(func)
-    
+def authenticate (f):
+    @wraps(f)    
     def decorated(*args, **kwargs):
         token_auth_header = request.headers.get('Authorization')
+        current_user = 0
         if token_auth_header:
 
             token = token_auth_header.split(' ')[1]
             if not token:
-                print ('its in not token')
                 return {'message' : 'Token is missing!'}, 401 
             
             token_blacklisted = Blacklist.query.filter_by(token=token).first()
 
             if token_blacklisted:
-                print ('its in Blacklisted')
                 return {'message' : 'Token is expired!'}, 401 
             try: 
                 data = jwt.decode(token, app.config['SECRET_KEY'])
-                user_id = data['user']
-                # current_user = user
-                current_user = User.query.get(user_id)
-                if current_user:
-                    request.data = json.loads(request.data) if len(request.data) else {}
-                    request.data['current_user'] = current_user 
+                matched_user = User.query.filter_by(user_name=data['user']).first()
+                current_user = matched_user.user_name
+                
+                # if current_user:
+                #     request.data = json.loads(request.data) if len(request.data) else {}
+                #     request.data['current_user'] = current_user 
                     
-            except:
-                print ('its in except')
+            except jwt.exceptions.InvalidTokenError:
                 return {'message' : 'Token is invalid!'} , 401
         else:
-            print ('its in else')
             return {'message' : 'unauthorised'}, 401
-        return func(*args, **kwargs)
+        return f(*args, current_user, **kwargs)
     return decorated
 
 
@@ -132,8 +128,8 @@ class UserLogin(Resource):
         if db_user != None: 
             if check_password_hash(db_user.password_hash, password) :
                 token = jwt.encode({
-                                        'user': db_user.id,
-                                        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=10)},
+                                        'user': db_user.user_name,
+                                        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=100)},
                                         app.config['SECRET_KEY'])
                 verified = True
         
@@ -148,7 +144,7 @@ class UserLogin(Resource):
 class UserLogout(Resource):
 
     @authenticate
-    def post(self):
+    def post(self, current_user):
         token = request.headers.get('Authorization').split(' ')[1]
         
         token_black_listed = Blacklist(token)
@@ -162,9 +158,9 @@ class UserResetPassword(Resource):
     
     @authenticate
     @api.expect(password_reset_model)
-    def post(self):
-
-        current_user = request.data['current_user']
+    def post(self, current_user):
+        
+        # current_user = request.data['current_user']
         password_payload = api.payload
         found = False
 
@@ -172,7 +168,6 @@ class UserResetPassword(Resource):
         if db_user != None:
             if check_password_hash(db_user.password_hash, password_payload['current_password']) :
                 db_user.password_hash = generate_password_hash(password_payload['new_password'])
-                db.session.add(db_user.password_hash)
                 db.session.commit()
                 found = True
         

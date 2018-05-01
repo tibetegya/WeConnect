@@ -30,6 +30,14 @@ class BusinessModel(db.Model):
 
     def business_as_dict(self):
         """Represent the business as a dict"""
+        business = {
+                    'business_name' : self.business_name,
+                    'category' : self.category,
+                    'location' : self.location,
+                    'id' : self.id,
+                    'profile' : self.profile
 
-        # return {self.__table__.columns}
-        return {b.name: getattr(self, b.name) for b in self.__table__.columns}
+        }
+        return business
+        # # return {self.__table__.columns}
+        # return {b.name: getattr(self, b.name) for b in self.__table__.columns}

@@ -12,6 +12,7 @@ class ApiTestCase(unittest.TestCase):
         self.client = self.app.test_client
         self.base_url = '/api/v2'
         db.create_all()
+
         self.business_list_endpoint = '/businesses'
         self.business_endpoint = '/businesses/1'
         self.business_endpoint2 = '/businesses/2'
@@ -22,8 +23,12 @@ class ApiTestCase(unittest.TestCase):
                 'business_name': 'airtel',
                 'category': 'telcom',
                 'location': 'kampala',
-                'profile': 'photo'
-        }
+                'profile': 'photo' }
+        self.test_business_to_update = {
+                'business_name': 'mtn',
+                'category': 'carrier',
+                'location': 'gulu',
+                'profile': 'pic'}
         
         self.user_register_endpoint = '/auth/register'
         self.user_login_endpoint = '/auth/login'
@@ -33,23 +38,23 @@ class ApiTestCase(unittest.TestCase):
         self.test_user = {
             'user_name': 'george256',
             'email': 'george@andela.com',
-            'password': 'asdfgh123'
-        }
+            'password': 'asdfgh123'}
+
         self.test_user_login = {
             'user_name': 'george256',
-            'password': 'asdfgh123'
-        }
+            'password': 'asdfgh123'}
+
         self.test_password_change = {
             'current_password': 'asdfgh123',
-            'new_password': 'abcdefghj123'
-        }
+            'new_password': 'abcdefghj123'}
+
         self.review_endpoint = '/businesses/1/reviews'
         self.test_review = {
             'title': 'Work with them',
             'body': 'This is a great establishment',
-            'author': 'george'
+            'author': 'george'}
 
-        }
+        
 
     def tearDown(self):
         with self.app.app_context():

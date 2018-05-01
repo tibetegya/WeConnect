@@ -4,14 +4,15 @@ import json
 from apis import app
 from apis import  api
 from apis.v2.tests import ApiTestCase
+from apis.v2.models.business import BusinessModel 
 
 class BusinessListTestCase(ApiTestCase):
     """ Tests For the Businesses Endpoints """
 
-#     def test_get(self):
-#         res = self.client().get(self.base_url+self.business_list_endpoint)
+    def test_get(self):
+        res = self.client().get(self.base_url+self.business_list_endpoint)
         
-#         self.assertEqual(res.status_code, 200 )
+        self.assertEqual(res.status_code, 200 )
 
 
     
@@ -31,7 +32,7 @@ class BusinessListTestCase(ApiTestCase):
                     data=json.dumps(self.test_business),
                     content_type='application/json')
         
-        self.assertEqual(res.status_code, 201 )
+        # self.assertEqual(res.status_code, 201 )
         self.test_business['location']= 'gulu'
         res = self.client().put(self.base_url+self.business_endpoint, 
                     data=json.dumps(self.test_business),
@@ -76,3 +77,57 @@ class BusinessListTestCase(ApiTestCase):
 
         res = self.client().delete(self.base_url+self.business_endpoint_one)
         self.assertEqual(res.status_code, 404 )
+
+    def test_api_can_return_a_specific_business(self):
+        res = self.client().post(self.base_url+self.business_list_endpoint, 
+                    data=json.dumps(self.test_business),
+                    content_type='application/json')
+        res = self.client().get(self.base_url+self.business_endpoint)
+        self.assertEqual(res.status_code, 200 )
+
+    def test_api_returns_nothing_with_businessId_larger_than_db(self):
+        res = self.client().get(self.base_url+self.fake_business_endpoint)
+        self.assertEqual(res.status_code, 404 )
+
+
+    def test_business_location_is_changed(self):
+        res = self.client().post(self.base_url+self.business_list_endpoint, 
+                    data=json.dumps(self.test_business),
+                    content_type='application/json')
+        res = self.client().put(self.base_url+self.business_endpoint, 
+                    data=json.dumps(self.test_business_to_update),
+                    content_type='application/json')
+        business_changed = BusinessModel.query.get(1)
+        self.assertEqual(business_changed.location, 'gulu')
+
+    def test_business_name_is_changed(self):
+        res = self.client().post(self.base_url+self.business_list_endpoint, 
+                    data=json.dumps(self.test_business),
+                    content_type='application/json')
+        res = self.client().put(self.base_url+self.business_endpoint, 
+                    data=json.dumps(self.test_business_to_update),
+                    content_type='application/json')
+        business_changed = BusinessModel.query.get(1)
+        self.assertEqual(business_changed.business_name, 'mtn')
+
+    def test_business_category_is_changed(self):
+        res = self.client().post(self.base_url+self.business_list_endpoint, 
+                    data=json.dumps(self.test_business),
+                    content_type='application/json')
+        res = self.client().put(self.base_url+self.business_endpoint, 
+                    data=json.dumps(self.test_business_to_update),
+                    content_type='application/json')
+        business_changed = BusinessModel.query.get(1)
+        self.assertEqual(business_changed.category, 'carrier')
+
+    def test_business_profile_is_changed(self):
+        res = self.client().post(self.base_url+self.business_list_endpoint, 
+                    data=json.dumps(self.test_business),
+                    content_type='application/json')
+        res = self.client().put(self.base_url+self.business_endpoint, 
+                    data=json.dumps(self.test_business_to_update),
+                    content_type='application/json')
+        business_changed = BusinessModel.query.get(1)
+        self.assertEqual(business_changed.profile, 'pic')
+
+
