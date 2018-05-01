@@ -44,7 +44,8 @@ class ApiTestCase(unittest.TestCase):
                         ]
         
         self.other_users = [ { 'user_name': 'sonia', 'email': 'sonia@andela.com', 'password': 'karungi'},
-                            { 'user_name': 'elijah', 'email': 'elijah@andela.com', 'password': 'rwothoromo'}
+                            { 'user_name': 'elijah', 'email': 'elijah@andela.com', 'password': 'rwothoromo'},
+                            {'email': 'roger@andela.com', 'password': 'okello'}
                         ]
         
         self.reset_george_password = {

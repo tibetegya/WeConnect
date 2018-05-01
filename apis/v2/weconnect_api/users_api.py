@@ -81,13 +81,11 @@ class UserRegister(Resource):
     def post(self):
 
         new_user = api.payload
-        user_name = new_user['user_name']
-        email = new_user['email']
-        password = new_user['password']
 
         # Check for empty username
-        if new_user['user_name'].strip() == '':
+        if 'user_name' or 'email' or 'password' not in  new_user :
             return {'message': 'Username Cannot be empty'} , 403
+        # elif new_user['user_name'].strip() == '':
 
         # Check for empty email
         elif new_user['email'].strip() == '':
@@ -105,6 +103,11 @@ class UserRegister(Resource):
             return {'message': 'User Already exists'} , 403
 
         # Register the User
+
+        user_name = new_user['user_name']
+        email = new_user['email']
+        password = new_user['password']
+
         user_object = User(user_name, email, password)
         db.session.add(user_object)
         db.session.commit()
@@ -136,7 +139,7 @@ class UserLogin(Resource):
         if verified:       
             return {'token' : token.decode('UTF-8')}, 200
         else:
-            return {'message' : 'user does not exist'}, 404
+            return {'message' : 'user does not exist'}, 403
 
         
 
