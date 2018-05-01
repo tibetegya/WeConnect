@@ -5,15 +5,22 @@ from apis import api
 from apis import app
 from apis.v2.tests import ApiTestCase
 
+
 class UserTestCase(ApiTestCase):
     """ Tests For the Reviews Endpoints """
-    def login_test_user(self):
-            res = self.client().post(self.base_url+self.user_login_endpoint, 
-                        data=json.dumps(self.test_user_login),
-                        content_type='application/json')
-            token_dict = json.loads(res.data.decode())
-            token = token_dict['token']
-            return token
+    # def register_test_user(self, tester):
+    #     res = self.client().post(self.base_url+self.user_register_endpoint, 
+    #             data=json.dumps(tester),
+    #             content_type='application/json')
+
+
+    # def login_test_user(self, tester_login):
+    #         res = self.client().post(self.base_url+self.user_login_endpoint, 
+    #                     data=json.dumps(tester_login),
+    #                     content_type='application/json')
+    #         token_dict = json.loads(res.data.decode())
+    #         token = token_dict['token']
+    #         return token 
 
     # def test_api_does_not_create_account_with_empty_username(self):
     #     self.test_user['user_name']= ''
@@ -71,48 +78,25 @@ class UserTestCase(ApiTestCase):
     #                     content_type='application/json')
     #     self.assertEqual(res.status_code, 404)
 
-    # def test_token_is_returned_upon_user_successfully_logs_in(self):
-    #     res = self.client().post(self.base_url+self.user_register_endpoint, 
-    #                     data=json.dumps(self.test_user),
-    #                     content_type='application/json')
+    def test_token_is_returned_upon_user_successfully_logs_in(self):
+        res = self.client().post(self.base_url+self.user_login_endpoint, 
+                        data=json.dumps(self.test_user_login),
+                        content_type='application/json')
+        self.assertEqual(res.status_code, 200)
+        self.assertIn('token', str(res.data))
 
-    #     res = self.client().post(self.base_url+self.user_login_endpoint, 
-    #                     data=json.dumps(self.test_user_login),
-    #                     content_type='application/json')
-    #     self.assertEqual(res.status_code, 200)
-    #     self.assertIn('token', str(res.data))
+    def test_user_can_logout(self):
 
-    # def test_user_can_logout(self):
-    #     res = self.client().post(self.base_url+self.user_register_endpoint, 
-    #                     data=json.dumps(self.test_user),
-    #                     content_type='application/json')
+        res = self.client().post(self.base_url+self.user_logout_endpoint, 
+                        headers={'Authorization': 'Bearer ' + self.tokens[0]})
+        self.assertEqual(res.status_code, 200)
 
-    #     res = self.client().post(self.base_url+self.user_login_endpoint, 
-    #                     data=json.dumps(self.test_user_login),
-    #                     content_type='application/json')
-        
-    #     token_dict = json.loads(res.data.decode())
-    #     token = token_dict['token']
-        
-    #     res = self.client().post(self.base_url+self.user_logout_endpoint, 
-    #                     headers={'Authorization': 'Bearer ' + token})
-    #     self.assertEqual(res.status_code, 200)
 
-    def test_can_change_password(self):
-        res = self.client().post(self.base_url+self.user_register_endpoint, 
-                data=json.dumps(self.test_user),
-                content_type='application/json')
+    def test_user_can_reset_password(self):
 
-        # res = self.client().post(self.base_url+self.user_login_endpoint, 
-        #                 data=json.dumps(self.test_user_login),
-        #                 content_type='application/json')
-        
-        # token_dict = json.loads(res.data.decode())
-        # token = token_dict['token']
-        token = self.login_test_user()
         res = self.client().post(self.base_url+self.user_reset_password_endpoint,
-                        data=json.dumps(self.test_password_change),
-                        headers={'Authorization': 'Bearer {}'.format(token) },
+                        data=json.dumps(self.reset_george_password),
+                        headers={'Authorization': 'Bearer {}'.format(self.tokens[0]) },
                         content_type='application/json')
         print(res.data)
         self.assertEqual(res.status_code, 201)

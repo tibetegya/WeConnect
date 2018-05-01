@@ -1,4 +1,5 @@
 import unittest
+import json
 from apis import app, db
 from config import Config, app_config
 
@@ -35,28 +36,42 @@ class ApiTestCase(unittest.TestCase):
         self.user_logout_endpoint = '/auth/logout'
         self.user_reset_password_endpoint = '/auth/reset-password'
 
-        self.test_user = {
-            'user_name': 'george256',
-            'email': 'george@andela.com',
-            'password': 'asdfgh123'}
 
-        self.test_user_login = {
-            'user_name': 'george256',
-            'password': 'asdfgh123'}
-
-        self.test_password_change = {
-            'current_password': 'asdfgh123',
-            'new_password': 'abcdefghj123'}
+        self.test_users = [ { 'user_name': 'george', 'email': 'george@andela.com', 'password': 'tibetegya'},
+                            { 'user_name': 'peter', 'email': 'peter@andela.com', 'password': 'walugembe'},
+                            { 'user_name': 'ben', 'email': 'ben@andela.com', 'password': 'asiimwe'},
+                            { 'user_name': 'david', 'email': 'david@andela.com', 'password': 'ssali'}
+                        ]
+        
+        self.reset_george_password = {
+            'current_password': 'tibetegya',
+            'new_password': 'tibzy'}
 
         self.review_endpoint = '/businesses/1/reviews'
-        self.test_review = {
-            'title': 'Work with them',
-            'body': 'This is a great establishment',
-            'author': 'george'}
-
+        self.test_review = { 'title': 'Work with them', 'body': 'This is a great establishment'}
         
+        self.tokens = []
+        # REGISTER AND LOGIN USERS
+        for user in self.test_users:
+            self.register_test_user(user)
+            self.tokens.append(self.login_test_user(user))
+            
 
     def tearDown(self):
         with self.app.app_context():
             db.session.close()
             db.drop_all()
+
+    def register_test_user(self, tester):
+        res = self.client().post(self.base_url+self.user_register_endpoint, 
+                data=json.dumps(tester),
+                content_type='application/json')
+
+
+    def login_test_user(self, tester):
+            res = self.client().post(self.base_url+self.user_login_endpoint, 
+                        data=json.dumps(tester),
+                        content_type='application/json')
+            token_dict = json.loads(res.data.decode())
+            token = token_dict['token']
+            return token 
