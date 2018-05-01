@@ -79,10 +79,10 @@ class UserTestCase(ApiTestCase):
     #     self.assertEqual(res.status_code, 404)
 
     def test_token_is_returned_upon_user_successfully_logs_in(self):
-        res = self.client().post(self.base_url+self.user_login_endpoint, 
-                        data=json.dumps(self.test_user_login),
-                        content_type='application/json')
-        self.assertEqual(res.status_code, 200)
+        # res = self.client().post(self.base_url+self.user_login_endpoint, 
+        #                 data=json.dumps(self.test_users[0]),
+        #                 content_type='application/json')
+        # self.assertEqual(res.status_code, 200)
         self.assertIn('token', str(res.data))
 
     def test_user_can_logout(self):
