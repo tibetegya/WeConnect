@@ -6,7 +6,7 @@ class Config(object):
     TESTING = False
     SECRET_KEY = 'you-will-never-guess'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql://postgres:andela123@localhost/weconnectdb')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql://postgres@localhost/weconnectdb')
     
 class DevelopmentConfig(Config):
     DEVELOPMENT = True
@@ -17,7 +17,7 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     TESTING = True
     DEBUG=True
-    SQLALCHEMY_DATABASE_URI = "postgresql://postgres:andela123@localhost/test_weconnectdb"
+    SQLALCHEMY_DATABASE_URI = "postgresql://tibzy@localhost/test_weconnectdb"
 
 
 

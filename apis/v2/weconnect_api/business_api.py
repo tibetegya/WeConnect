@@ -5,7 +5,8 @@ import datetime
 # local imports  
 from apis import db
 from apis import api
-from apis.v2.weconnect_api.users_api import authenticate
+from apis.v2.utils import authenticate
+from apis.v2.models.user import User
 from apis.v2.models.business import BusinessModel
 
 
@@ -20,33 +21,40 @@ business_model = api.model('business',{'business_name': fields.String('the busin
                 'category': fields.String('the business category.'),
                 'location': fields.String('the business\'s location.'),
                 'id': fields.Integer(),
-                'profile': fields.String('the business logo.')
+                'profile': fields.String('the business logo.'),
+                'created_by': fields.String(),
+                'creation_date': fields.DateTime()
                 })
 
 class BusinessList(Resource):
+    """Class Representing Businesses Endpoints  """
 
     @api.doc(responses={
         400: 'Validation Error',
         401: 'Bearer Authentication Error'
     }, id ='get_all_businesses' )
-    # @api.header('token', type=str, description ='Authentication token')
-    #@authenticate
+    @api.header('token', type=str, description ='Authentication token')
+    @authenticate
     @api.marshal_with(business_model, code=200 , description='Displays a list of registered Businesses')
-    def get(self):
-        # businesses = BusinessModel.business_as_dict()
+    def get(self, current_user):
+        
         businesses = BusinessModel.query.all()
+        
         return businesses , 200
 
     api.doc('post biz')
-    #@authenticate
+    @api.header('token', type=str, description ='Authentication token')
+    @authenticate
     @api.expect(business_model)
-    def post(self):
+    def post(self, current_user):
+        self.current_user = current_user
         new_biz = api.payload
 
+        db_user = User.query.filter_by(user_name=self.current_user).first()
 
         # Adding a business
         new_business = BusinessModel(new_biz['business_name'], new_biz['category'],
-                            new_biz['location'], new_biz['profile'])
+                            new_biz['location'], new_biz['profile'],db_user.id)
         db.session.add(new_business)
         db.session.commit()
 
@@ -59,17 +67,27 @@ class BusinessList(Resource):
 
 class Business(Resource):
 
-    def get(self, businessId):
+    @authenticate
+    @api.marshal_with(business_model, code=200 , description='Displays a registered Businesses')
+    def get(self, current_user, businessId):
         find_business = BusinessModel.query.get(businessId)
         if find_business != None:
-            return find_business.business_as_dict(), 200
+            return find_business, 200
         else:
             return {'message': 'business not found'} , 404
     
+    
+    @authenticate
     @api.expect(business_model)
-    def put(self, businessId):
+    def put(self, current_user, businessId):
         biz_to_change = api.payload
+
         business_to_change = BusinessModel.query.get(businessId)
+        db_user = User.query.filter_by(user_name=current_user).first()
+        
+        if business_to_change.created_by != db_user.id:
+            return {'message':'You are not authorised to Change this business'}, 403
+        
         
         if business_to_change:
             
@@ -95,13 +113,19 @@ class Business(Resource):
 
             return {'result': 'business changed successfully'}, 201
         else:
-            return {'message': 'business does not exist'}, 404
+            return {'message': 'business does not exist'}, 400
     
 
         
-    
-    def delete(self, businessId ):
-
+    @authenticate
+    def delete(self, current_user, businessId ):
+        
+        business_to_change = BusinessModel.query.get(businessId)
+        db_user = User.query.filter_by(user_name=current_user).first()
+        
+        if business_to_change.created_by != db_user.id:
+            return {'message':'You are not authorised to Change this business'}, 403
+            
         check_business = BusinessModel.query.get(businessId)
         if check_business == None:
             return {'message': 'that business does not exist'}, 400

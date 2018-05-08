@@ -14,6 +14,7 @@ from apis import db
 from apis import api
 from apis.v2.models.user import User
 from apis.v2.models.blacklist import Blacklist
+from apis.v2.utils import authenticate, validate_user_payload, is_already_logged_in, validate_reset_payload
 
 
 
@@ -39,73 +40,28 @@ password_reset_model = api.model('password_reset',{
                                 'new_password': fields.String('New Password')  
                                 })
 
-
-
-def authenticate (f):
-    @wraps(f)    
-    def decorated(*args, **kwargs):
-        token_auth_header = request.headers.get('Authorization')
-        current_user = 0
-        if token_auth_header:
-
-            token = token_auth_header.split(' ')[1]
-            if not token:
-                return {'message' : 'Token is missing!'}, 401 
-            
-            token_blacklisted = Blacklist.query.filter_by(token=token).first()
-
-            if token_blacklisted:
-                return {'message' : 'Token is expired!'}, 401 
-            try: 
-                data = jwt.decode(token, app.config['SECRET_KEY'])
-                matched_user = User.query.filter_by(user_name=data['user']).first()
-                current_user = matched_user.user_name
-                
-                # if current_user:
-                #     request.data = json.loads(request.data) if len(request.data) else {}
-                #     request.data['current_user'] = current_user 
-                    
-            except jwt.exceptions.InvalidTokenError:
-                return {'message' : 'Token is invalid!'} , 401
-        else:
-            return {'message' : 'unauthorised'}, 401
-        return f(*args, current_user, **kwargs)
-    return decorated
-
-
-
 class UserRegister(Resource):
 
     
     @api.expect(user_model)
     def post(self):
 
-        new_user = api.payload
-
-        # Check for empty username
-        if 'user_name' or 'email' or 'password' not in  new_user :
-            return {'message': 'Username Cannot be empty'} , 403
-        # elif new_user['user_name'].strip() == '':
-
-        # Check for empty email
-        elif new_user['email'].strip() == '':
-            return {'message': 'Email Cannot be empty'} , 403
-
-        # Check for empty password
-        elif new_user['password'].strip() == '':
-            return {'message': 'Password Cannot be empty'} , 403
-        
+        new_user = api.payload 
+        is_not_valid_input = validate_user_payload(api.payload)
+        if is_not_valid_input:
+            return is_not_valid_input
         
         # Check for an already existent username
-        db_user = User.query.filter_by(user_name=new_user['user_name']).first()
-        
-        if db_user != None:
+        db_user_with_same_name = User.query.filter_by(user_name=new_user['user_name']).first()
+        db_user_with_same_email = User.query.filter_by(email=new_user['email']).first()
+
+        if (db_user_with_same_name or db_user_with_same_email) != None:
             return {'message': 'User Already exists'} , 403
 
         # Register the User
 
-        user_name = new_user['user_name']
-        email = new_user['email']
+        user_name = new_user['user_name'].strip()
+        email = new_user['email'].strip()
         password = new_user['password']
 
         user_object = User(user_name, email, password)
@@ -115,7 +71,7 @@ class UserRegister(Resource):
 
 
 class UserLogin(Resource):
-    
+    @is_already_logged_in
     @api.expect(user_login_model)
     def post(self):
         
@@ -163,7 +119,9 @@ class UserResetPassword(Resource):
     @api.expect(password_reset_model)
     def post(self, current_user):
         
-        # current_user = request.data['current_user']
+        is_not_valid_input = validate_reset_payload(api.payload)
+        if is_not_valid_input:
+            return is_not_valid_input
         password_payload = api.payload
         found = False
 

@@ -17,7 +17,7 @@ manager.add_command('db', MigrateCommand)
 
 @manager.command
 def migrator():
-    os.system('export FLASK_APP=run')
+    os.system('export FLASK_APP=run.py')
         
     os.system('flask db init')
     # os.system('flask db migrate')

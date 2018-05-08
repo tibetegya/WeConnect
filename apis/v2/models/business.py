@@ -18,26 +18,14 @@ class BusinessModel(db.Model):
     reviews = db.relationship(
         'ReviewModel', order_by='ReviewModel.id', cascade='all, delete-orphan')
 
-    def __init__(self, business_name, category, location, profile):
+    def __init__(self, business_name, category, location, profile, current_user):
         self.business_name = business_name
         self.category = category
         self.location = location
         self.profile = profile
-        # self.created_by = session["user_id"]
+        self.created_by = current_user
 
     def __repr__(self):
         return '<Business: {}>'.format(self.business_name)
 
-    def business_as_dict(self):
-        """Represent the business as a dict"""
-        business = {
-                    'business_name' : self.business_name,
-                    'category' : self.category,
-                    'location' : self.location,
-                    'id' : self.id,
-                    'profile' : self.profile
 
-        }
-        return business
-        # # return {self.__table__.columns}
-        # return {b.name: getattr(self, b.name) for b in self.__table__.columns}

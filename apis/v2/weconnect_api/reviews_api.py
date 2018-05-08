@@ -5,7 +5,7 @@ import datetime
 from apis import db
 from apis import api
 from apis.v2.models.review import ReviewModel
-
+from apis.v2.utils import authenticate
 
 
 
@@ -17,11 +17,12 @@ review_model = api.model('review',{'title': fields.String('review title.'),
                  })
 
 
-# reviews = []
+
 class Review(Resource):
 
+    @authenticate
     @api.marshal_with(review_model, envelope='reviews')
-    def get(self, businessId):
+    def get(self, current_user, businessId):
         
         # get all reviews where the business id is businessId
         biz_reviews = ReviewModel.query.filter_by(business=businessId).all()
@@ -32,15 +33,16 @@ class Review(Resource):
 
 
         
-
+    @authenticate
     @api.expect(review_model)
-    # @api.marshal_with(review_model, envelope='reviews')
-    def post(self, businessId):
+    @api.marshal_with(review_model, envelope='reviews')
+    def post(self, current_user, businessId):
         self.businessId = businessId
         new_review = api.payload
 
+        db_user = User.query.filter_by(user_name=current_user).first()
         # Create a new review
-        add_review = ReviewModel(new_review['title'], new_review['body'], self.businessId)
+        add_review = ReviewModel(new_review['title'], new_review['body'], self.businessId, db_user.id)
         db.session.add(add_review)
         db.session.commit() 
 

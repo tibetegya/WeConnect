@@ -16,12 +16,21 @@ class ReviewModel(db.Model):
     update_date = db.Column(db.DateTime, default=db.func.current_timestamp(
     ), onupdate=db.func.current_timestamp())
 
-    def __init__(self, title, body, business):
+    def __init__(self, title, body, business, db_user):
         self.title = title
         self.body = body
         self.business = business
-        # self.author = session["user_id"]
+        self.author = db_user
 
     def __repr__(self):
         return '<Review: {}>'.format(self.name)
 
+    def review_as_dict(self):
+        """Represent the review as a dict"""
+        return { 'title' : self.title,
+                 'id' : self.id,
+                 'body': self.body,
+                 'author' : self.author,
+                 'creation_date' : self.creation_date
+
+        }
