@@ -5,7 +5,7 @@ import datetime
 # local imports  
 from apis import db
 from apis import api
-from apis.v2.utils import authenticate
+from apis.v2.utils import authenticate, validate_business_payload, validate_business_update_payload
 from apis.v2.models.user import User
 from apis.v2.models.business import BusinessModel
 
@@ -50,6 +50,10 @@ class BusinessList(Resource):
         self.current_user = current_user
         new_biz = api.payload
 
+        is_not_valid_input = validate_business_payload(api.payload)
+        if is_not_valid_input:
+            return is_not_valid_input
+
         db_user = User.query.filter_by(user_name=self.current_user).first()
 
         # Adding a business
@@ -74,7 +78,7 @@ class Business(Resource):
         if find_business != None:
             return find_business, 200
         else:
-            return {'message': 'business not found'} , 404
+            return {'message': 'business not found'} , 400
     
     
     @authenticate
@@ -82,7 +86,14 @@ class Business(Resource):
     def put(self, current_user, businessId):
         biz_to_change = api.payload
 
+        is_not_valid_input = validate_business_update_payload(api.payload)
+        if is_not_valid_input:
+            return is_not_valid_input
+
         business_to_change = BusinessModel.query.get(businessId)
+        if business_to_change == None:
+            return {'message':'There is no Business with ID : {}'.format(businessId)}, 400
+
         db_user = User.query.filter_by(user_name=current_user).first()
         
         if business_to_change.created_by != db_user.id:
@@ -123,6 +134,9 @@ class Business(Resource):
         business_to_change = BusinessModel.query.get(businessId)
         db_user = User.query.filter_by(user_name=current_user).first()
         
+        if business_to_change == None:
+            return {'message':'There is no Business with ID : {}'.format(businessId)}, 400
+
         if business_to_change.created_by != db_user.id:
             return {'message':'You are not authorised to Change this business'}, 403
             

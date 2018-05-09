@@ -18,7 +18,7 @@ before_script:
 # command to run tests    
 script:
   - pytest apis/v2/tests/.
-  - coverage run --source='apis/' manage.py test  
+  - coverage run --source='apis/v2' manage.py test  
   - coverage report
 
 # generate code climate report  

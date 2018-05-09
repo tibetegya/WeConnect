@@ -5,16 +5,17 @@ import datetime
 from apis import db
 from apis import api
 from apis.v2.models.review import ReviewModel
-from apis.v2.utils import authenticate
+from apis.v2.models.user import User
+from apis.v2.utils import authenticate, validate_review_payload
 
 
 
 
 
-review_model = api.model('review',{'title': fields.String('review title.'),
-                'body': fields.String('body'),
-                'author': fields.String('user that created')
-                 })
+review_model = api.model('review',{'title': fields.String(),
+                'body': fields.String(),
+                'author_id': fields.String(),
+                'creation_date' : fields.DateTime() })
 
 
 
@@ -29,16 +30,20 @@ class Review(Resource):
         if biz_reviews:
             return biz_reviews , 200
         else:
-            return {'message': 'business has no reviews'}, 404
+            return {'message': 'business has no reviews'}, 400
 
 
         
     @authenticate
     @api.expect(review_model)
-    @api.marshal_with(review_model, envelope='reviews')
+    #@api.marshal_with(review_model, envelope='reviews')
     def post(self, current_user, businessId):
         self.businessId = businessId
         new_review = api.payload
+
+        is_not_valid_input = validate_review_payload(api.payload)
+        if is_not_valid_input:
+            return is_not_valid_input
 
         db_user = User.query.filter_by(user_name=current_user).first()
         # Create a new review

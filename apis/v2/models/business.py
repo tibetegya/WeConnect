@@ -8,8 +8,8 @@ class BusinessModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     business_name = db.Column(db.String(50), unique=True, nullable=False)
-    category = db.Column(db.String(200), nullable=False)
-    location = db.Column(db.String(200), nullable=False)        
+    category = db.Column(db.String(50), nullable=False)
+    location = db.Column(db.String(50), nullable=False)        
     profile = db.Column(db.String(256))
     created_by = db.Column(db.Integer, db.ForeignKey('users.id'))
     creation_date = db.Column(db.DateTime, default=db.func.current_timestamp())

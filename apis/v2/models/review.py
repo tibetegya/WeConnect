@@ -8,10 +8,10 @@ class ReviewModel(db.Model):
     __tablename__ = 'reviews'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    title = db.Column(db.String(50), unique=True, nullable=False)
+    title = db.Column(db.String(50), nullable=False)
     body = db.Column(db.String(256), nullable=False)
     business = db.Column(db.Integer, db.ForeignKey('businesses.id'))
-    author = db.Column(db.Integer, db.ForeignKey('users.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     creation_date = db.Column(db.DateTime, default=db.func.current_timestamp())
     update_date = db.Column(db.DateTime, default=db.func.current_timestamp(
     ), onupdate=db.func.current_timestamp())
@@ -20,17 +20,8 @@ class ReviewModel(db.Model):
         self.title = title
         self.body = body
         self.business = business
-        self.author = db_user
+        self.author_id = db_user
 
     def __repr__(self):
         return '<Review: {}>'.format(self.name)
 
-    def review_as_dict(self):
-        """Represent the review as a dict"""
-        return { 'title' : self.title,
-                 'id' : self.id,
-                 'body': self.body,
-                 'author' : self.author,
-                 'creation_date' : self.creation_date
-
-        }

@@ -68,22 +68,22 @@ def validate_user_payload (new_user):
         elif len(new_user['email']) > 120:
             return {'message': 'email is too long'} , 400
 
-def is_already_logged_in (f):
-    @wraps(f)    
-    def decorated(*args, **kwargs):
-        token_auth_header = request.headers.get('Authorization')
-        current_user = ''
-        if token_auth_header:
+# def is_already_logged_in (f):
+#     @wraps(f)    
+#     def decorated(*args, **kwargs):
+#         token_auth_header = request.headers.get('Authorization')
+#         current_user = ''
+#         if token_auth_header:
 
-            token = token_auth_header.split(' ')[1]
+#             token = token_auth_header.split(' ')[1]
             
-            token_blacklisted = Blacklist.query.filter_by(token=token).first()
+#             token_blacklisted = Blacklist.query.filter_by(token=token).first()
 
-            if token_blacklisted == None:
-                return {'message' : 'You are Already logged in '}, 200 
+#             if token_blacklisted == None:
+#                 return {'message' : 'You are Already logged in '}, 200 
             
-        return f(*args, **kwargs)
-    return decorated
+#         return f(*args, **kwargs)
+#     return decorated
 
 def validate_reset_payload (new_user):
     # Check for non existent fields
@@ -96,3 +96,39 @@ def validate_reset_payload (new_user):
         elif new_user['new_password'].strip() == '':
             return {'message': 'New Password Cannot be empty'} , 403
 
+
+def validate_review_payload (new_payload):
+
+    if not ('title' in new_payload.keys() and 'body' in new_payload.keys()):
+            return {'message': 'Payload should not have missing fields'} , 403
+    if len(new_payload['title']) > 50:
+            return {'message': 'title is too long'} , 400
+    if len(new_payload['body']) > 256:
+            return {'message': 'body is too long'} , 400
+
+
+def validate_business_payload (new_payload):
+
+    if not ('business_name' in new_payload.keys() and 'category' in new_payload.keys() and 'location' in new_payload.keys() and 'profile' in new_payload.keys()):
+            return {'message': 'Payload should not have missing fields'} , 403
+    if len(new_payload['business_name']) > 50:
+            return {'message': 'name is too long'} , 400
+    if len(new_payload['category']) > 50:
+            return {'message': 'body is too long'} , 400
+    if len(new_payload['location']) > 50:
+            return {'message': 'location is too long'} , 400
+    if len(new_payload['profile']) > 256:
+            return {'message': 'profile is too long'} , 400
+
+def validate_business_update_payload (new_payload):
+
+    if not ('business_name' in new_payload.keys() or 'category' in new_payload.keys() or'location' in new_payload.keys() or 'profile' in new_payload.keys()):
+            return {'message': 'Payload should not have missing fields'} , 403
+    if len(new_payload['business_name']) > 50:
+            return {'message': 'name is too long'} , 400
+    if len(new_payload['category']) > 50:
+            return {'message': 'body is too long'} , 400
+    if len(new_payload['location']) > 50:
+            return {'message': 'location is too long'} , 400
+    if len(new_payload['profile']) > 256:
+            return {'message': 'profile is too long'} , 400

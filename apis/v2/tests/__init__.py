@@ -15,10 +15,10 @@ class ApiTestCase(unittest.TestCase):
         db.create_all()
 
         self.business_list_endpoint = '/businesses'
-        self.business_endpoint = '/businesses/1'
-        self.business_endpoint2 = '/businesses/2'
+        self.business_endpoint_1 = '/businesses/1'
+        self.business_endpoint_2 = '/businesses/2'
         self.business_endpoint_one = '/businesses/one'
-        self.fake_business_endpoint = '/businesses/900'
+        self.business_endpoint_900 = '/businesses/900'
         
         self.test_business = {
                 'business_name': 'airtel',
@@ -50,19 +50,59 @@ class ApiTestCase(unittest.TestCase):
                             {'user_name': 'elijah', 'password': 'karungi'}
                         ]
         
-        self.reset_george_password = {
-            'current_password': 'tibetegya',
-            'new_password': 'tibzy'}
+        self.reset_george_password = {'current_password': 'tibetegya','new_password': 'tibzy'}
+
+        self.test_businesses = [ {'business_name': 'airtel','category': 'telcom','location': 'kampala','profile': 'airtel profile' },
+                                 {'business_name': 'safe boda','category': 'transport','location': 'kampala','profile': 'safe boda profile' },
+                                 {'business_name': 'mtn','category': 'telcom','location': 'kampala','profile': 'mtn profile' },
+                                 {'business_name': 'andela','category': 'software','location': 'gulu','profile': 'andela profile' } ]
+        
+        self.other_businesses = [ {'business_name': 'vodafone','category': 'cellular','location': 'gulu','profile': 'vodafone profile' },
+                                 {'business_name': 'apple','category': 'appliances','location': 'gulu','profile': 'apple profile' } ]
+
+        self.invalid_businesses = [ {'business_name': 'vodafonevodafonevodafonevodafonevodafonevodafonevodafonevodafonevodafone',
+                                    'category': 'cellular','location': 'gulu','profile': 'vodafone profile' },
+                                    {'business_name': 'vodafone','category': 'cellularcellularcellularcellularcellularcellularcellularcellular',
+                                    'location': 'gulu','profile': 'vodafone profile' },
+                                    {'business_name': 'vodafone','category': 'cellular',
+                                    'location': 'guluguluguluguluuluguluguluguluuluguluguluguluulugulugulugulu','profile': 'vodafone profile' },
+                                    {'business_name': 'apple','category': 'appliances','location': 'gulu',
+                                    'profile': 'apple profileapple profileapple profileapple profileapple profileapple profileapple profile\
+                                        apple profileapple profileapple profileapple profileapple profileapple profileapple profile\
+                                        apple profileapple profileapple profileapple profileapple profileapple profileapple profile' } ]
 
         self.review_endpoint = '/businesses/1/reviews'
-        self.test_review = { 'title': 'Work with them', 'body': 'This is a great establishment'}
+        self.review_endpoint_900 = '/businesses/900/reviews'
+        self.test_reviews = [{'title': 'Work with them', 'body': 'This is a great establishment'},
+                             {'title': 'they are the best', 'body': 'This is a great establishment of proffesional;s'},
+                             {'title': 'quality guaranteed', 'body': 'You wont be dis appointed because This is a great establishment'}]
+        
+        self.other_reviews = [{'title': 'excellent', 'body': 'This is a great establishment'},
+                             {'title': 'super', 'body': 'This is a great establishment of proffesional;s'}]
+        
+        self.invalid_reviews = [{'title': 'super'},
+                                {'title': 'excellentexcellentexcellentexcellentexcellentxcellentexcellentexcellentexcellentexcellent',
+                                 'body': 'This is a great establishment'},
+                             {'title': 'super', 
+                             'body': 'This is a great establishment of proffesionalshis is a great establishment of proffesionals\
+                                This is a great establishment of proffesionalshis is a great establishment of proffesionals\
+                                This is a great establishment of proffesionalshis is a great establishment of proffesionals\
+                                This is a great establishment of proffesionalshis is a great establishment of proffesionals'}]
         
         self.tokens = []
         # REGISTER AND LOGIN USERS
         for user in self.test_users:
             self.register_test_user(user)
             self.tokens.append(self.login_test_user(user))
-            
+        
+        # REGISTER BUSINESSES
+        for i in range(3):
+            self.register_test_businesses(self.test_businesses[i], self.tokens[i])
+
+        # Add reviews to a business
+        for review in self.test_reviews:
+            self.add_test_reviews(review, self.tokens[0])
+
 
     def tearDown(self):
         with self.app.app_context():
@@ -81,4 +121,17 @@ class ApiTestCase(unittest.TestCase):
                         content_type='application/json')
             token_dict = json.loads(res.data.decode())
             token = token_dict['token']
-            return token 
+            return token
+
+    def register_test_businesses(self, business, token):
+            res = self.client().post(self.base_url+self.business_list_endpoint, 
+                        data=json.dumps(business),
+                        headers={'Authorization': 'Bearer ' + token},
+                        content_type='application/json')
+
+    def add_test_reviews(self, review, token):
+            res = self.client().post(self.base_url+self.review_endpoint, 
+                        data=json.dumps(review),
+                        headers={'Authorization': 'Bearer ' + token},
+                        content_type='application/json')
+              

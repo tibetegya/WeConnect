@@ -93,8 +93,12 @@ class UserTestCase(ApiTestCase):
                         data=json.dumps(self.reset_george_password),
                         headers={'Authorization': 'Bearer {}'.format(self.tokens[0]) },
                         content_type='application/json')
-        print(res.data)
         self.assertEqual(res.status_code, 201)
+
+    def test_for_missing_token(self):
+
+        res = self.client().post(self.base_url+self.user_logout_endpoint)
+        self.assertEqual(res.status_code, 401)
 
           
     

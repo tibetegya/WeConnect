@@ -14,7 +14,7 @@ from apis import db
 from apis import api
 from apis.v2.models.user import User
 from apis.v2.models.blacklist import Blacklist
-from apis.v2.utils import authenticate, validate_user_payload, is_already_logged_in, validate_reset_payload
+from apis.v2.utils import authenticate, validate_user_payload, validate_reset_payload # , is_already_logged_in
 
 
 
@@ -71,7 +71,7 @@ class UserRegister(Resource):
 
 
 class UserLogin(Resource):
-    @is_already_logged_in
+    #@is_already_logged_in
     @api.expect(user_login_model)
     def post(self):
         
