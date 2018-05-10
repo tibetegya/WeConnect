@@ -80,7 +80,7 @@ In order to run the API Application
 ## Deployment
 
 The application is deployed on Heroku Server at
->https://weconnect-tibe.herokuapp.com/
+> https://weconnect-tibe.herokuapp.com/api/v2
 
 ## License
 
