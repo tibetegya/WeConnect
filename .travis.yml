@@ -1,31 +1,19 @@
-
-language: python
-python:
-  - "3.6"
-env:
-  - DATABASE_URL=postgresql://db_user:andela123@localhost/test_weconnectdb SECRET_KEY=some_secret_value FLASK_CONFIG=testing 
-  global:
-    - CC_TEST_REPORTER_ID=4f55d4e50a1d692db37945ee57a0a0cdb1de950ee6f87e4645009e8f697b3197
-  
-install:
-  - pip install -r requirements.txt
-
-#create database
-before_script:
-  - psql -c 'create database test_weconnectdb;' -U postgres
-  - psql -c "create user db_user with password 'andela123';" -U postgres
-
-# command to run tests    
-script:
-  - pytest apis/v2/tests/.
-  - coverage run --source='apis/v2' manage.py test  
-  - coverage report
-
-# generate code climate report  
-after_script:
+--- 
+after_script: 
   - codeclimate-test-reporter
-
-# push report to coveralls.io
-after_success:
+after_success: 
   - coveralls
-
+before_script: 
+  - "psql -c 'create database test_weconnectdb;' -U postgres"
+  - "psql -c \"create user db_user with password 'andela123';\" -U postgres"
+env: 
+  - "DATABASE_URL=postgresql://db_user:andela123@localhost/test_weconnectdb SECRET_KEY=some_secret_value FLASK_CONFIG=testing"
+install: 
+  - "pip install -r requirements.txt"
+language: python
+python: 
+  - "3.6"
+script: 
+  - "pytest apis/v2/tests/."
+  - "coverage run --source='apis/v2' manage.py test"
+  - "coverage report"
