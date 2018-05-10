@@ -102,21 +102,28 @@ class Business(Resource):
         
         if business_to_change:
             
-            # change business name
-            if biz_to_change['business_name'] != business_to_change.business_name:
-                business_to_change.business_name = biz_to_change['business_name']
-                
-            # change category    
-            if biz_to_change['category'] != business_to_change.category:
-                business_to_change.category = biz_to_change['category']
+                # change business name
+            if 'business_name' in biz_to_change:
+                test_biz = BusinessModel.query.filter_by(business_name=api.payload['business_name']).first()
+                if test_biz != None and test_biz.business_name.lower() != business_to_change.business_name.lower():
+                    return {'message': 'business name is already taken'} , 400
+                if biz_to_change['business_name'] != business_to_change.business_name:
+                    business_to_change.business_name = biz_to_change['business_name']
+                    
+                # change category    
+            if 'category' in biz_to_change:
+                if biz_to_change['category'] != business_to_change.category:
+                    business_to_change.category = biz_to_change['category']
 
-            # change location
-            if biz_to_change['location'] != business_to_change.location:
-                business_to_change.location = biz_to_change['location']
+                # change location
+            if 'location' in biz_to_change:
+                if biz_to_change['location'] != business_to_change.location:
+                    business_to_change.location = biz_to_change['location']
 
-            # change profile
-            if biz_to_change['profile'] != business_to_change.profile:
-                business_to_change.profile = biz_to_change['profile']
+                # change profile
+            if 'profile' in biz_to_change:
+                if biz_to_change['profile'] != business_to_change.profile:
+                    business_to_change.profile = biz_to_change['profile']
             
             # db.session.add(business_to_change)
             db.session.commit()
@@ -148,5 +155,5 @@ class Business(Resource):
             db.session.delete(check_business)
             db.session.commit()            
         
-            return {'result': 'business deleted'}, 201
+            return {'message': 'business deleted'}, 201
             
