@@ -3,7 +3,7 @@ language: python
 python:
   - "3.6"
 env:
- - - DATABASE_URL=postgresql://db_user:andela123@localhost/test_weconnectdb SECRET_KEY=some_secret_value FLASK_CONFIG=testing 
+  - DATABASE_URL=postgresql://db_user:andela123@localhost/test_weconnectdb SECRET_KEY=some_secret_value FLASK_CONFIG=testing 
   global:
     - CC_TEST_REPORTER_ID=4f55d4e50a1d692db37945ee57a0a0cdb1de950ee6f87e4645009e8f697b3197
   
@@ -24,7 +24,6 @@ script:
 # generate code climate report  
 after_script:
   - codeclimate-test-reporter
-  - coveralls
 
 # push report to coveralls.io
 after_success:
