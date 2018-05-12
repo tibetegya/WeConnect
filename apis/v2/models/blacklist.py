@@ -1,8 +1,9 @@
-# local imports
 from apis import db
+
 
 class Blacklist(db.Model):
     """Class for blacklisted tokens"""
+
 
     __tablename__ = 'blacklists'
 
@@ -13,6 +14,5 @@ class Blacklist(db.Model):
     def __init__(self, token):
         self.token = token
 
-    # Represent the object when it is queried
     def __repr__(self):
         return '<Token: {}'.format(self.token)

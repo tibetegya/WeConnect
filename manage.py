@@ -1,7 +1,9 @@
 import unittest
 import os
+
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
+
 from apis import app, db
 from apis.v2.models.blacklist import Blacklist
 from apis.v2.models.business import BusinessModel

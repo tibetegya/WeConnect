@@ -1,9 +1,12 @@
 import unittest
-import flask 
+
+import flask
 import json
+
 from apis import api
 from apis import app
 from apis.v1.tests import ApiTestCase
+
 
 class ReviewTestCase(ApiTestCase):
     """ Tests For the Reviews Endpoints """

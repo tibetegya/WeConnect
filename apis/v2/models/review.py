@@ -1,9 +1,9 @@
-# local imports
 from apis import db
 
 
 class ReviewModel(db.Model):
     """Class to create a Review class object"""
+
 
     __tablename__ = 'reviews'
 
@@ -13,8 +13,8 @@ class ReviewModel(db.Model):
     business = db.Column(db.Integer, db.ForeignKey('businesses.id'))
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     creation_date = db.Column(db.DateTime, default=db.func.current_timestamp())
-    update_date = db.Column(db.DateTime, default=db.func.current_timestamp(
-    ), onupdate=db.func.current_timestamp())
+    update_date = db.Column(db.DateTime, default=db.func.current_timestamp(),
+                            onupdate=db.func.current_timestamp())
 
     def __init__(self, title, body, business, db_user):
         self.title = title
@@ -24,4 +24,3 @@ class ReviewModel(db.Model):
 
     def __repr__(self):
         return '<Review: {}>'.format(self.name)
-

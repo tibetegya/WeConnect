@@ -1,15 +1,12 @@
-from flask_restplus import Api, Resource, reqparse, fields, marshal_with
-import datetime 
+import datetime
 
-# loacl imports
+from flask_restplus import Api, Resource, fields, marshal_with
+
 from apis import db
 from apis import api
 from apis.v2.models.review import ReviewModel
 from apis.v2.models.user import User
 from apis.v2.utils import authenticate, validate_review_payload
-
-
-
 
 
 review_model = api.model('review',{'title': fields.String(),
@@ -18,26 +15,30 @@ review_model = api.model('review',{'title': fields.String(),
                 'creation_date' : fields.DateTime() })
 
 
-
 class Review(Resource):
+    """ this class handles the business reviews endpoints """
+
 
     @authenticate
     @api.marshal_with(review_model, envelope='reviews')
     def get(self, current_user, businessId):
-        
+        """ this endpoint returns a specific business """
+
         # get all reviews where the business id is businessId
         biz_reviews = ReviewModel.query.filter_by(business=businessId).all()
+
         if biz_reviews:
             return biz_reviews , 200
         else:
             return {'message': 'business has no reviews'}, 400
 
 
-        
     @authenticate
     @api.expect(review_model)
     #@api.marshal_with(review_model, envelope='reviews')
     def post(self, current_user, businessId):
+        """ this method handles posting a review to a specific business """
+
         self.businessId = businessId
         new_review = api.payload
 
@@ -49,8 +50,6 @@ class Review(Resource):
         # Create a new review
         add_review = ReviewModel(new_review['title'], new_review['body'], self.businessId, db_user.id)
         db.session.add(add_review)
-        db.session.commit() 
-
+        db.session.commit()
 
         return {'result':'Review Added'}, 201
-

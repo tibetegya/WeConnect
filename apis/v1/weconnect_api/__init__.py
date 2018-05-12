@@ -1,19 +1,15 @@
 from apis import api
-from .reviews_api import Review, reviews
-from .business_api import Business, BusinessList, businesses
-from .users_api import UserRegister, UserLogin, UserLogout, UserResetPassword
+from apis.v1.weconnect_api.reviews_api import Review, reviews
+from apis.v1.weconnect_api.business_api import Business, BusinessList, businesses
+from apis.v1.weconnect_api.users_api import UserRegister, UserLogin, UserLogout, UserResetPassword
 
 
 """Business Endpoints"""
 api.add_resource(Business, '/businesses/<int:businessId>', endpoint="business")
 api.add_resource(BusinessList, '/businesses', endpoint="businesses")
 
-
-
 """Reviews Endpoints"""
 api.add_resource(Review, '/businesses/<int:businessId>/reviews', endpoint="reviews")
-
-
 
 """Users Endpoints"""
 api.add_resource(UserRegister, '/auth/register', endpoint="Register")

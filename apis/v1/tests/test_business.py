@@ -1,9 +1,12 @@
 import unittest
-import flask 
+
+import flask
 import json
+
 from apis import app
 from apis import  api
 from apis.v1.tests import ApiTestCase
+
 
 class BusinessListTestCase(ApiTestCase):
     """ Tests For the Businesses Endpoints """
