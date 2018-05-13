@@ -1,20 +1,20 @@
 
 language: python
-python: 
+python:
   - "3.6"
-install: 
+install:
   - pip install -r requirements.txt
 services:
   - postgresql
-before_script: 
+before_script:
   - psql -c "CREATE DATABASE test_weconnectdb;" -U postgres
   - psql -c "CREATE USER tibzy;" -U postgres
-env: 
+env:
   - DATABASE_URL=postgresql://tibzy@localhost/test_weconnectdb SECRET_KEY=some_secret_value APP_SETTINGS=config.TestingConfig
 
-script: 
+script:
   - pytest apis/v2/tests/.
   - coverage run --source='apis/v2' manage.py test
   - coverage report
-after_success: 
+after_success:
   - coveralls

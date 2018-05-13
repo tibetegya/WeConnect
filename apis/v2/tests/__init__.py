@@ -68,7 +68,8 @@ class ApiTestCase(unittest.TestCase):
                                  {'business_name': 'andela','category': 'software','location': 'gulu','profile': 'andela profile' } ]
 
         self.other_businesses = [ {'business_name': 'vodafone','category': 'cellular','location': 'gulu','profile': 'vodafone profile' },
-                                 {'business_name': 'apple','category': 'appliances','location': 'gulu','profile': 'apple profile' } ]
+                                 {'business_name': 'apple','category': 'appliances','location': 'gulu','profile': 'apple profile'},
+                                {'business_name': 'mtn','category': 'appliances','location': 'gulu','profile': 'apple profile'} ]
 
         self.invalid_businesses = [ {'business_name': 'vodafonevoda'*8,
                                     'category': 'cellular','location': 'gulu','profile': 'vodafone profile' },
@@ -87,12 +88,13 @@ class ApiTestCase(unittest.TestCase):
                              {'title': 'super', 'body': 'This is a great establishment of proffesional;s'}]
 
         self.invalid_reviews = [{'title': 'super'},
-                                {'title': 'excellent'*15,
-                                 'body': 'This is a great establishment'},
-                             {'title': 'super',
-                             'body': 'This is a great establishment of proffesionals'*10}]
+                                {'title': 'excellent'*15, 'body': 'This is a great establishment'},
+                                {'title': 'super', 'body': 'This is a great establishment of proffesionals'*10},
+                                {'title': '', 'body': 'This is a great establishment of proffesionals'},
+                                {'title': 'hool', 'body': ''}]
 
         self.tokens = []
+        self.post_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjoidGlibyIsImV4cCI6MTUyNjIzNDk5OH0.lF7HbO5zcmDdqmbNfbqC-0mp7sTxlZl7SqxpjmiySoc'
 
         # REGISTER AND LOGIN USERS
         for user in self.test_users:
@@ -106,6 +108,7 @@ class ApiTestCase(unittest.TestCase):
         # Add reviews to a business
         for review in self.test_reviews:
             self.add_test_reviews(review, self.tokens[0])
+
 
     def tearDown(self):
         """ the test runner will invoke this method after each test. """
@@ -146,3 +149,9 @@ class ApiTestCase(unittest.TestCase):
                             data=json.dumps(review),
                             headers={'Authorization': 'Bearer ' + token},
                             content_type='application/json')
+
+    def log_out_user(self, token):
+        """ tests that api catches missing token"""
+
+        self.client().post(self.base_url+self.user_logout_endpoint,
+                            headers={'Authorization': 'Bearer {}'.format(token)})

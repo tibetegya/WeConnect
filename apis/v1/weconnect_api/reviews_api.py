@@ -2,7 +2,7 @@ import datetime
 
 from flask_restplus import Api, Resource, reqparse, fields, marshal_with
 
-from apis import api
+from apis.v1 import ns_1 as api
 
 
 review_model = api.model('review',{'title': fields.String('review title.'),

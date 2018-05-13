@@ -3,43 +3,31 @@ from functools import wraps
 
 from werkzeug.security import generate_password_hash,  check_password_hash, safe_str_cmp
 from flask import Flask, request, jsonify
-from flask_restplus import Api, Resource, reqparse, fields, marshal_with
+from flask_restplus import Namespace, Api, Resource, reqparse, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
 import jwt
 import json
 
 from apis import app
 from apis import db
-from apis import api
 from apis.v2.models.user import User
 from apis.v2.models.blacklist import Blacklist
-from apis.v2.utils import authenticate, validate_user_payload, validate_reset_payload
-
-
-user_model = api.model('user', {'user_name': fields.String('User Name.'),
-                                'email': fields.String('Email Address'),
-                                'password': fields.String('Password')})
-
-user_login_model = api.model('user_login', {
-                                'user_name': fields.String('Username'),
-                                'password': fields.String('Password')
-                                })
-
-password_reset_model = api.model('password_reset', {
-                                'current_password': fields.String('Password'),
-                                'new_password': fields.String('New Password')
-                                })
+from apis.v2.utils.decorators import authenticate
+from apis.v2.utils.validators import validate_user_payload, validate_reset_payload
+from apis.v2.utils.user_models import api, register_model, login_model, reset_model, register_parser, login_parser, reset_parser
 
 
 class UserRegister(Resource):
     """ This Class handles the registration of a user """
 
-    @api.expect(user_model)
+    @api.expect(register_model)
     def post(self):
-        """this method handles the posting of a users data """
+        """handles registering a user """
 
-        new_user = api.payload
-        is_not_valid_input = validate_user_payload(api.payload)
+
+        args = register_parser.parse_args()
+        new_user = args
+        is_not_valid_input = validate_user_payload(args)
 
         if is_not_valid_input:
             return is_not_valid_input
@@ -49,7 +37,7 @@ class UserRegister(Resource):
         db_user_with_same_email = User.query.filter_by(email=new_user['email']).first()
 
         if (db_user_with_same_name or db_user_with_same_email) is not None:
-            return {'message': 'User Already exists'}, 403
+            return {'message': 'User Already exists'}, 400
 
         # Register the User
         user_name = new_user['user_name'].strip()
@@ -65,15 +53,15 @@ class UserRegister(Resource):
 class UserLogin(Resource):
     """ this class handles the loggong in of a user """
 
-    @api.expect(user_login_model)
+    @api.expect(login_model)
     def post(self):
-        """this method handles the posting the login data"""
+        """ handles posting login data"""
 
+        args = login_parser.parse_args()
         token = ''
         verified = False
-
-        user_name = api.payload['user_name']
-        password = api.payload['password']
+        user_name = args['user_name']
+        password = args['password']
 
         # Check if the user exists
         db_user = User.query.filter_by(user_name=user_name).first()
@@ -96,11 +84,12 @@ class UserLogin(Resource):
 class UserLogout(Resource):
     """ this Class handles the logging out of a user """
 
+    @api.header('Authorization', type=str, description ='Authentication token')
     @authenticate
-    def post(self, current_user):
-        """this method logs out a user by black listing their access token """
+    def post(self, current_user,token):
+        """logs out a user by black listing their access token """
 
-        token = request.headers.get('Authorization').split(' ')[1]
+        # token = request.headers.get('Authorization').split(' ')[1]
 
         token_black_listed = Blacklist(token)
         db.session.add(token_black_listed)
@@ -112,19 +101,19 @@ class UserLogout(Resource):
 class UserResetPassword(Resource):
     """ this Class handles resetting of the users password """
 
-
+    @api.header('Authorization', type=str, description ='Authentication token')
     @authenticate
-    @api.expect(password_reset_model)
-    def post(self, current_user):
-        """this method handles the posting of the pssword reset payload """
+    @api.expect(reset_model)
+    def post(self, current_user, token):
+        """resets user's password """
 
-        is_not_valid_input = validate_reset_payload(api.payload)
+        args = reset_parser.parse_args()
+        is_not_valid_input = validate_reset_payload(args)
 
         if is_not_valid_input:
             return is_not_valid_input
 
-        password_payload = api.payload
-        found = False
+        password_payload = args
 
         db_user = User.query.filter_by(user_name=current_user).first()
 
@@ -132,9 +121,11 @@ class UserResetPassword(Resource):
             if check_password_hash(db_user.password_hash, password_payload['current_password']):
                 db_user.password_hash = generate_password_hash(password_payload['new_password'])
                 db.session.commit()
-                found = True
+                return {'message': 'password is reset'}, 201
 
-        if found:
-            return {'message': 'password is reset'}, 201
-        else:
-            return {'message': 'user not found You cannot reset password'}, 404
+
+"""Users Endpoints"""
+api.add_resource(UserRegister, '/register', endpoint="Register")
+api.add_resource(UserLogin, '/login', endpoint="Login")
+api.add_resource(UserLogout, '/logout', endpoint="Logout" )
+api.add_resource(UserResetPassword, '/reset-password', endpoint="Reset-password")

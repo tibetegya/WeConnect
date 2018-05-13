@@ -9,7 +9,7 @@ import jwt
 import json
 
 from apis import app
-from apis import api
+from apis.v1 import ns_1 as api
 
 
 user_model = api.model('user',{'user_name': fields.String('User Name.'),
@@ -31,7 +31,7 @@ users = []
 token_black_list = []
 
 
-def authenticate (func):
+def authenticate(func):
     """ decorator method for jwt token authentication. """
 
     @wraps(func)
