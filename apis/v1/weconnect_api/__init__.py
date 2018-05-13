@@ -1,4 +1,4 @@
-from apis import api
+from apis.v1 import ns_1 as api
 from apis.v1.weconnect_api.reviews_api import Review, reviews
 from apis.v1.weconnect_api.business_api import Business, BusinessList, businesses
 from apis.v1.weconnect_api.users_api import UserRegister, UserLogin, UserLogout, UserResetPassword

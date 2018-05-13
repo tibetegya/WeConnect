@@ -3,9 +3,9 @@ import unittest
 import flask
 import json
 
-from apis import api
 from apis import app
 from apis.v2.tests import ApiTestCase
+from apis.v2.models.review import ReviewModel
 
 
 class ReviewTestCase(ApiTestCase):
@@ -31,6 +31,13 @@ class ReviewTestCase(ApiTestCase):
         self.assertEqual(res.status_code, 201)
 
 
+    def test_review_added_to_db(self):
+        """ Test that api add a review to the database """
+
+        added_review = ReviewModel.query.get(1)
+        self.assertEqual('<Review: {}>'.format(self.test_reviews[0]['title']), str(added_review))
+
+
     def test_post_incomplete_review(self):
         """ Test that api can not post an incomplete review"""
 
@@ -39,8 +46,27 @@ class ReviewTestCase(ApiTestCase):
                                 headers={'Authorization': 'Bearer ' + self.tokens[0]},
                                 content_type='application/json')
 
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 400)
 
+    def test_post_empty_review_title(self):
+        """ Test that api can not post a review with an empty title"""
+
+        res = self.client().post(self.base_url+self.review_endpoint,
+                                data=json.dumps(self.invalid_reviews[3]),
+                                headers={'Authorization': 'Bearer ' + self.tokens[0]},
+                                content_type='application/json')
+
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_empty_review_body(self):
+        """ Test that api can not post a review with an empty body"""
+
+        res = self.client().post(self.base_url+self.review_endpoint,
+                                data=json.dumps(self.invalid_reviews[4]),
+                                headers={'Authorization': 'Bearer ' + self.tokens[0]},
+                                content_type='application/json')
+
+        self.assertEqual(res.status_code, 400)
 
     def test_post_long_review_title(self):
         """ Test that api can not post a long reviews title"""

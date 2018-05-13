@@ -10,8 +10,8 @@ class Config(object):
     TESTING = False
     SECRET_KEY = 'you-will-never-guess'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql://postgres@localhost/weconnectdb')   
-
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql://postgres@localhost/weconnectdb')
+    SWAGGER_UI_JSONEDITOR = True
 
 class DevelopmentConfig(Config):
 

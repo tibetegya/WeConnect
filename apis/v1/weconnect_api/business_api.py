@@ -2,7 +2,7 @@ import datetime
 
 from flask_restplus import Api, Resource, reqparse, fields, marshal_with
 
-from apis import api
+from apis.v1 import ns_1 as api
 
 
 businesses = []
@@ -27,7 +27,7 @@ class BusinessList(Resource):
     #@api.header('token', type=str, description ='Authentication token')
     @api.marshal_with(business_model, code=200,
                         description='Displays a list of registered Businesses')
-    @authenticate
+    # @authenticate
     def get(self):
         """ Returns all businesses in the database """
 

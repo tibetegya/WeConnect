@@ -23,4 +23,4 @@ class ReviewModel(db.Model):
         self.author_id = db_user
 
     def __repr__(self):
-        return '<Review: {}>'.format(self.name)
+        return '<Review: {}>'.format(self.title)

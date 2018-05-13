@@ -3,9 +3,10 @@ import unittest
 import flask
 import json
 
-from apis import api
 from apis import app
 from apis.v2.tests import ApiTestCase
+from apis.v2.models.blacklist import Blacklist
+from apis.v2.models.user import User
 
 
 class UserTestCase(ApiTestCase):
@@ -19,7 +20,7 @@ class UserTestCase(ApiTestCase):
                                 data=json.dumps(self.other_users[2]),
                                 content_type='application/json')
 
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 400)
 
 
     def test_api_does_not_create_account_with_empty_username(self):
@@ -29,7 +30,7 @@ class UserTestCase(ApiTestCase):
                                 data=json.dumps(self.invalid_users['empty username']),
                                 content_type='application/json')
 
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 400)
 
 
     def test_api_does_not_create_account_with_invalid_username(self):
@@ -39,7 +40,7 @@ class UserTestCase(ApiTestCase):
                                 data=json.dumps(self.invalid_users['invalid username']),
                                 content_type='application/json')
 
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 400)
 
 
     def test_api_does_not_create_account_with_long_username(self):
@@ -58,7 +59,7 @@ class UserTestCase(ApiTestCase):
         res = self.client().post(self.base_url+self.user_register_endpoint,
                                 data=json.dumps(self.other_users[3]),
                                 content_type='application/json')
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 400)
 
 
     def test_api_does_not_create_account_without_email(self):
@@ -67,7 +68,7 @@ class UserTestCase(ApiTestCase):
         res = self.client().post(self.base_url+self.user_register_endpoint,
                                 data=json.dumps(self.other_users[4]),
                                 content_type='application/json')
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 400)
 
 
     def test_api_does_not_create_account_with_empty_email(self):
@@ -78,7 +79,7 @@ class UserTestCase(ApiTestCase):
                                 data=json.dumps(self.other_users[0]),
                                 content_type='application/json')
 
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 400)
 
 
     def test_api_does_not_create_account_with_invalid_email(self):
@@ -88,7 +89,7 @@ class UserTestCase(ApiTestCase):
                                 data=json.dumps(self.invalid_users['invalid email']),
                                 content_type='application/json')
 
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 400)
 
 
     def test_api_does_not_create_account_with_long_email(self):
@@ -109,7 +110,7 @@ class UserTestCase(ApiTestCase):
                                 data=json.dumps(self.other_users[0]),
                                 content_type='application/json')
 
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 400)
 
 
     def test_api_can_create_account(self):
@@ -122,14 +123,21 @@ class UserTestCase(ApiTestCase):
         self.assertEqual(res.status_code, 201)
 
 
+    def test_api_can_add_user_account_to_db(self):
+        """ tests that the api can register a user """
+
+        added_user = User.query.get(1)
+        self.assertEqual('<User: {}>'.format(self.test_users[0]['user_name']), str(added_user))
+
+
     def test_api_can_not_create_account_for_existent_user(self):
         """tests that the api can not register an already existent user in the database """
 
         res = self.client().post(self.base_url+self.user_register_endpoint,
-                                data=json.dumps(self.test_users[1]),
+                                data=json.dumps(self.test_users[0]),
                                 content_type='application/json')
 
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 400)
 
 
     def test_user_successfully_logs_in(self):
@@ -173,6 +181,15 @@ class UserTestCase(ApiTestCase):
         self.assertEqual(res.status_code, 200)
 
 
+    def test_token_is_blacklisted_on_logout(self):
+        """ tests that api can blacklist token """
+
+        res = self.client().post(self.base_url+self.user_logout_endpoint,
+                                headers={'Authorization': 'Bearer ' + self.tokens[0]})
+        blacklisted = Blacklist.query.all()
+        self.assertEqual('<Token: {}'.format(self.tokens[0]), str(blacklisted[0]))
+
+
     def test_user_can_reset_password(self):
         """tests that the api can reset a users password. """
 
@@ -192,7 +209,7 @@ class UserTestCase(ApiTestCase):
                                 headers={'Authorization': 'Bearer {}'.format(self.tokens[0]) },
                                 content_type='application/json')
 
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 400)
 
 
     def test_user_cannot_reset_password_with_missing_new_payload(self):
@@ -203,7 +220,7 @@ class UserTestCase(ApiTestCase):
                                 headers={'Authorization': 'Bearer {}'.format(self.tokens[0]) },
                                 content_type='application/json')
 
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 400)
 
 
     def test_user_cannot_reset_password_with_missing_old_payload(self):
@@ -214,7 +231,7 @@ class UserTestCase(ApiTestCase):
                                 headers={'Authorization': 'Bearer {}'.format(self.tokens[0]) },
                                 content_type='application/json')
 
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 400)
 
 
     def test_user_cannot_reset_password_with_empty_old_payload(self):
@@ -225,7 +242,7 @@ class UserTestCase(ApiTestCase):
                                 headers={'Authorization': 'Bearer {}'.format(self.tokens[0]) },
                                 content_type='application/json')
 
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 400)
 
 
     def test_user_cannot_reset_password_with_empty_new_payload(self):
@@ -236,12 +253,37 @@ class UserTestCase(ApiTestCase):
                                 headers={'Authorization': 'Bearer {}'.format(self.tokens[0]) },
                                 content_type='application/json')
 
-        self.assertEqual(res.status_code, 403)
+        self.assertEqual(res.status_code, 400)
 
+
+    def test_for_no_token(self):
+        """ tests that api catches missing token"""
+
+        res = self.client().post(self.base_url+self.user_logout_endpoint)
+
+        self.assertEqual(res.status_code, 401)
+
+    def test_for_invalid_token(self):
+        """ tests that api catches an unthorised request"""
+
+        res = self.client().post(self.base_url+self.user_logout_endpoint,
+                                headers={'Authorization': 'Bearer {}'.format(self.post_token)})
+
+        self.assertEqual(res.status_code, 401)
+
+    def test_for_blacklisted_token(self):
+        """ tests that api catches missing token"""
+        # log out a user
+        self.log_out_user(self.tokens[3])
+        res = self.client().post(self.base_url+self.user_logout_endpoint,
+                                headers={'Authorization': 'Bearer {}'.format(self.tokens[3])})
+
+        self.assertEqual(res.status_code, 401)
 
     def test_for_missing_token(self):
         """ tests that api catches missing token"""
 
-        res = self.client().post(self.base_url+self.user_logout_endpoint)
+        res = self.client().post(self.base_url+self.user_logout_endpoint,
+                                headers={'Authorization': 'Bearer'})
 
         self.assertEqual(res.status_code, 401)
