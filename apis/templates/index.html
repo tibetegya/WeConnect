@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="theme-color" content="#4371DB" />
+    <title>WeConnect API</title>
+    <link rel="shortcut icon" href="{{url_for('static', filename='css/Images/favicon.png')}}" type="image/x-icon">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.css')}}">
+    <link href="https://fonts.googleapis.com/css?family=Fira+Sans" rel="stylesheet">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+
+</head>
+<body>
+    <div class="container-fluid">
+
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #4371DB;">
+            <div class="container">
+                <a class="navbar-brand circular" href="index.html">
+                    <img src="{{url_for('static', filename='css/Images/logo.svg')}}" width="40" height="40" class="d-inline-block align-center" alt=""style="margin: 0 .5rem 0 0">
+                    <span>WeConnect</span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-md-auto align-items-center ">
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="api/v2">Latest Version</a>
+                        </li>
+
+                    </ul>
+
+                </div><!--navbarSupportContent -->
+            </div><!--Conatiner -->
+        </nav>
+
+        <div class="container">
+            <div class="main row">
+                <div class="col-md-12">
+                    <div class="row justify-content-md-center"style="text-align: center; margin: 2rem 0 4rem 0; ">
+                        <h1 class=" circular " >WeConnect API Documentation</h1>
+                        <p class="fira">The API Docummentation is available for two versions where
+                            <a href="api/v1"><span class="badge badge-pill badge-secondary"> API Version 1</span></a> is Non Persistent Data
+                            <br> and <a href="api/v2"><span class="badge badge-pill badge-success"> API Version 2 </span></a> is one with Persitent data.</p>
+                    </div>
+                </div>  <!-- end of <div col-md-12 -->
+
+            </div>  <!-- main row-->
+        </div>  <!-- conatiner-->
+
+
+
+
+
+    </div><!--container-fluid -->
+
+
+
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+
+    <script src="{{ url_for('static', filename='js/bootstrap.js')}}"></script>
+</body>
+</html>

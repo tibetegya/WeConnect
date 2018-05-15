@@ -1,95 +1,157 @@
 import datetime
 
-from flask_restplus import Api, Resource, reqparse, fields, marshal_with
+from flask import request, jsonify
+from flask_restplus import Namespace, Resource, fields, marshal_with
 
-from apis.v1 import ns_1 as api
-
-
-businesses = []
-
-business_model = api.model('business',{'business_name': fields.String('the business name.'),
-                # 'id': fields.Integer(1),
-                'location': fields.String('the business\'s location.'),
-                'category': fields.String('the business category.'),
-                'profile': fields.String('the business logo.')
-                # 'creation_date': fields.Date(),
-                # 'business_owner': fields.String('user that created')
-                })
+from apis.v1 import db
+from apis.v1.utils.decorators import authenticate
+from apis.v1.utils.validators import validate_business_payload, validate_business_update_payload
+from apis.v1.models.user import User
+from apis.v1.models.business import BusinessModel
+from apis.v1.utils.business_models import api, business_model, post_model, business_parser, update_business_parser
 
 
 class BusinessList(Resource):
-    """ Handles the business endpoints for all businesses """
+    """Class Representing Businesses Endpoints  """
 
 
-    @api.doc(responses={400: 'Validation Error',
-                        401: 'Bearer Authentication Error'},
-                        id ='get_all_businesses' )
-    #@api.header('token', type=str, description ='Authentication token')
-    @api.marshal_with(business_model, code=200,
-                        description='Displays a list of registered Businesses')
-    # @authenticate
-    def get(self):
-        """ Returns all businesses in the database """
+    @api.doc(responses={
+            400: 'Validation Error',
+            401: 'Bearer Authentication Error'}, id='get_all_businesses' )
+    @api.header('Authorization', type=str, description ='Authentication token')
+    @authenticate
+    @api.marshal_with(business_model, code=200, description='Displays a list of registered Businesses')
+    def get(self, current_user,token):
+        """ returns all businesses in the databases """
 
-        return businesses , 200
+        businesses = BusinessModel.get_all()
+
+        return businesses, 200
 
 
-    #@authenticate
-    @api.expect(business_model)
-    def post(self):
-        """ Method for Posting a Business """
+    @api.doc('post biz')
+    @api.header('Authorization', type=str, description ='Authentication token')
+    @authenticate
+    @api.expect(post_model)
+    def post(self, current_user,token):
+        """ posts a business """
 
-        new_biz = api.payload
-        new_biz['id'] = len(businesses)+1
-        businesses.append(new_biz)
-        return businesses[-1] , 201
+        self.current_user = current_user
+        args = business_parser.parse_args()
+        new_biz = args
+        is_not_valid_input = validate_business_payload(args)
 
+        if is_not_valid_input:
+            return is_not_valid_input
+
+        db_user = User.filter_by(user_name=self.current_user)
+
+        # Adding a business
+        new_business = BusinessModel(new_biz['business_name'], new_biz['category'],
+                            new_biz['location'], new_biz['profile'],db_user.id)
+        db.commit(new_business)
+
+        # # Return for added business
+        # added_business = BusinessModel.filter_by(business_name=new_biz['business_name'])
+        # business_list = added_business.business_as_dict()
+
+        return {'message': 'business added sucessfully'}, 201
 
 
 class Business(Resource):
-    """ Handles Endpoints for a specific Business """
+    """ This Class handles endpoints for a specific business """
 
+    @api.header('Authorization', type=str, description ='Authentication token')
+    @authenticate
+    @api.marshal_with(business_model, code=200, description='Displays a registered Businesses')
+    def get(self, current_user, token, businessId):
+        """ returns a specific business """
 
-    def get(self, businessId):
-        """ Method for returning a specific Business """
-
-        return businesses[businessId-1], 200
-
-
-    @api.expect(business_model)
-    def put(self, businessId):
-        """ Method for Updating a Specific business """
-
-        biz_to_change = api.payload
-        found = False
-        if type(businessId) == int :
-            if businessId > len(businesses):
-                return {'message': 'bad request Yo !'}, 400
-            else:
-                for biz in businesses:
-                    if biz['id'] == biz_to_change['id']:
-                        found = True
-                        businesses[businessId-1] = biz_to_change
-                        return {'result': 'business changed successfully'}, 201
-        if found == False :
-            return {'result': 'business does not exist'}, 404
-
-
-    def delete(self, businessId ):
-        """ Method for deleting a Specific business """
-
-        biz_to_delete = api.payload
-        if type(businessId) != int :
-            return {'message': 'business id must be an integer'}, 400
+        find_business = BusinessModel.get(businessId)
+        if find_business is not None:
+            return find_business, 200
         else:
-            if businessId > len(businesses):
-                return {'message': 'bad request Yo!'}, 400
+            return {'message': 'business not found'}, 400
+
+    @api.header('Authorization', type=str, description ='Authentication token')
+    @authenticate
+    @api.expect(post_model)
+    def put(self, current_user, token, businessId):
+        """ updates a specific businesses data """
+
+        business_to_change = BusinessModel.get(businessId)
+        args = update_business_parser.parse_args()
+        biz_to_change =  args
+        is_not_valid_input = validate_business_update_payload(args, businessId)
+
+        if is_not_valid_input:
+            return is_not_valid_input
+
+
+        if business_to_change is None:
+            return {'message':'There is no Business with ID : {}'.format(businessId)}, 400
+
+        else:
+
+            db_user = User.filter_by(user_name=current_user)
+            if business_to_change.created_by != db_user.id:
+                return {'message':'You are not authorised to Change this business'}, 403
+
+                # change business name
+            if biz_to_change['business_name'] is not None:
+
+                test_biz = BusinessModel.filter_by(business_name=args['business_name'])
+
+                if test_biz is not None and test_biz.business_name.lower() != business_to_change.business_name.lower():
+                    return {'message': 'business name is already taken'}, 400
+
+                if biz_to_change['business_name'] != business_to_change.business_name:
+                    business_to_change.business_name = biz_to_change['business_name']
+
+                # change category
+            if biz_to_change['category'] is not None:
+
+                if biz_to_change['category'] != business_to_change.category:
+                    business_to_change.category = biz_to_change['category']
+
+                # change location
+            if biz_to_change['location'] is not None:
+
+                if biz_to_change['location'] != business_to_change.location:
+                    business_to_change.location = biz_to_change['location']
+
+                # change profile
+            if biz_to_change['profile'] is not None:
+
+                if biz_to_change['profile'] != business_to_change.profile:
+                    business_to_change.profile = biz_to_change['profile']
+
+            db.update(business_to_change)
+
+            return {'result': 'business changed successfully'}, 201
+
+
+    @api.header('Authorization', type=str, description ='Authentication token')
+    @authenticate
+    def delete(self, current_user, token, businessId):
+        """ deletes a specific businesses """
+
+        business_to_change = BusinessModel.get(businessId)
+        db_user = User.filter_by(user_name=current_user)
+
+        if business_to_change is None:
+            return {'message':'There is no Business with ID : {}'.format(businessId)}, 400
+
+        else:
+            if business_to_change.created_by != db_user.id:
+                return {'message':'You are not authorised to Change this business'}, 403
+
             else:
-                for biz in businesses:
-                    if biz['id'] ==  biz_to_delete['id']:
+                db.delete(business_to_change)
+                return {'message': 'business deleted'}, 201
 
-                            del businesses[businessId-1]
-                            return {'result': 'business deleted'}, 201
-                else:
-                    return {'message': 'We Don\' t know that business Yo!'}, 404
 
+
+"""Business Endpoints"""
+api.add_resource(Business, '/<int:businessId>', endpoint="business")
+api.add_resource(BusinessList, '', endpoint="businesses")

@@ -1,158 +1,127 @@
 import datetime
 from functools import wraps
 
-from flask import Flask, request, jsonify
-from flask_restplus import Api, Resource, reqparse, fields, marshal_with
 from werkzeug.security import generate_password_hash,  check_password_hash, safe_str_cmp
-from werkzeug.datastructures import FileStorage
+from flask import Flask, request, jsonify
+from flask_restplus import Namespace, Api, Resource, reqparse, fields, marshal_with
+from flask_sqlalchemy import SQLAlchemy
 import jwt
 import json
 
 from apis import app
-from apis.v1 import ns_1 as api
-
-
-user_model = api.model('user',{'user_name': fields.String('User Name.'),
-                                'email': fields.String('Email Address'),
-                                'password': fields.String('Password'),
-                                'profile': fields.String('Profile Photo') })
-
-user_login_model = api.model('user_login',{
-                                'user_name': fields.String('Username'),
-                                'password': fields.String('Password')
-                                })
-
-password_reset_model = api.model('password_reset',{
-                                'current_password': fields.String('Password'),
-                                'new_password': fields.String('New Password')
-                                })
-
-users = []
-token_black_list = []
-
-
-def authenticate(func):
-    """ decorator method for jwt token authentication. """
-
-    @wraps(func)
-    def decorated(*args, **kwargs):
-
-        token_auth_header = request.headers.get('Authorization')
-
-        if token_auth_header:
-            token = token_auth_header.split(' ')[1]
-
-            if not token:
-                return {'message' : 'Token is missing!'}, 401
-            if token in token_black_list:
-                return {'message' : 'Token is expired!'}, 401
-            try:
-                data = jwt.decode(token, app.config['SECRET_KEY'])
-                user = data['user']
-                #current_user = user
-                # if user:
-                #     print('if starts off as working')
-                #     request.data = json.loads(request.data) if len(request.data) else {}
-                #     request.data['current_user'] = current_user
-                #     print('if is working')
-            except:
-                return {'message' : 'Token is invalid!'} , 401
-        else:
-            return {'message' : 'unauthorised'}, 401
-
-        return func(*args, **kwargs)
-
-    return decorated
-
+from apis.v1 import db
+from apis.v1.models.user import User
+from apis.v1.models.blacklist import Blacklist
+from apis.v1.utils.decorators import authenticate
+from apis.v1.utils.validators import validate_user_payload, validate_reset_payload
+from apis.v1.utils.user_models import api, register_model, login_model, reset_model, register_parser, login_parser, reset_parser
 
 
 class UserRegister(Resource):
-    """ Class that handles the registration of users """
+    """ This Class handles the registration of a user """
 
-
-    @api.expect(user_model)
+    @api.expect(register_model)
     def post(self):
-        """ method for posting user registration data """
+        """handles registering a user """
 
-        new_user = api.payload
-        if new_user['user_name'].strip() == '':
-            return {'message': 'Username Cannot be empty'} , 403
-        elif new_user['email'].strip() == '':
-            return {'message': 'Email Cannot be empty'} , 403
-        elif new_user['password'].strip() == '':
-            return {'message': 'Password Cannot be empty'} , 403
-        for u in users:
-            if new_user['user_name'] == u['user_name']:
-                return {'message': 'User Already exists'} , 403
 
-        new_user['id'] = len(users)+1
-        # pw_hash = generate_password_hash(new_user['password'])
-        # new_user['password'] = pw_hash
-        users.append(new_user)
-        return {'result':'You Are Registered'}, 201
+        args = register_parser.parse_args()
+        new_user = args
+        is_not_valid_input = validate_user_payload(args)
+
+        if is_not_valid_input:
+            return is_not_valid_input
+
+        # Check for an already existent username
+        db_user_with_same_name = User.filter_by(user_name=new_user['user_name'])
+        db_user_with_same_email = User.filter_by(email=new_user['email'])
+
+        if (db_user_with_same_name or db_user_with_same_email) is not None:
+            return {'message': 'User Already exists'}, 400
+
+        # Register the User
+        user_name = new_user['user_name'].strip()
+        email = new_user['email'].strip()
+        password = new_user['password']
+
+        user_object = User(user_name, email, password)
+        db.commit(user_object)
+        return {'result': 'You Are Registered'}, 201
 
 
 class UserLogin(Resource):
-    """ Class that handles logging in users """
+    """ this class handles the loggong in of a user """
 
-
-    @api.expect(user_login_model)
+    @api.expect(login_model)
     def post(self):
-        """ method for logging in a user """
+        """ handles posting login data"""
 
+        args = login_parser.parse_args()
         token = ''
         verified = False
+        user_name = args['user_name']
+        password = args['password']
 
-        user_name = api.payload['user_name']
-        password = api.payload['password']
+        # Check if the user exists
+        db_user = User.filter_by(user_name=user_name)
 
-        for user in users:
-            if user_name == user['user_name'] and password == user['password']:
+        if db_user is not None:
+            if check_password_hash(db_user.password_hash, password):
                 token = jwt.encode({
-                                    'user': user['user_name'],
-                                    'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=10)},
+                                    'user': db_user.user_name,
+                                    'exp': datetime.datetime.utcnow()
+                                        + datetime.timedelta(minutes=100)},
                                     app.config['SECRET_KEY'])
                 verified = True
 
         if verified:
-            return {'token' : token.decode('UTF-8')}, 200
+            return {'token': token.decode('UTF-8')}, 200
         else:
-            return {'message' : 'user not found'}, 404
-
+            return {'message': 'user does not exist'}, 403
 
 
 class UserLogout(Resource):
-    """ Class that handles the logging out of a user """
+    """ this Class handles the logging out of a user """
 
-
+    @api.header('Authorization', type=str, description ='Authentication token')
     @authenticate
-    def post(self):
-        """ method that handles the logging out of a user """
+    def post(self, current_user, token):
+        """logs out a user by black listing their access token """
 
-        token = request.headers.get('Authorization').split(' ')[1]
+        token_black_listed = Blacklist(token)
+        db.commit(token_black_listed)
 
-        token_black_list.append(token)
-        return {'result': 'you are logged out'} , 200
-
+        return {'result': 'you are logged out'}, 200
 
 
 class UserResetPassword(Resource):
-    """ Class that handles resetting of a user's password """
+    """ this Class handles resetting of the users password """
 
-
+    @api.header('Authorization', type=str, description ='Authentication token')
     @authenticate
-    @api.expect(password_reset_model)
-    def post(self):
-        """ method that handles the password reset endpoint """
+    @api.expect(reset_model)
+    def post(self, current_user, token):
+        """resets user's password """
 
-        current_user = request.data['current_user']
-        password_payload = api.payload
-        found = False
-        for u in users:
-            if current_user == u['user_name'] and password_payload['current_password']==u['password']:
-                u['password'] = password_payload['new_password']
-                found = True
-        if found:
-            return {'message': 'password is reset'}, 201
-        else:
-            return {'message': 'user not found You cannot reset password'}, 404
+        args = reset_parser.parse_args()
+        is_not_valid_input = validate_reset_payload(args)
+
+        if is_not_valid_input:
+            return is_not_valid_input
+
+        password_payload = args
+
+        db_user = User.filter_by(user_name=current_user)
+
+        if db_user is not None:
+            if check_password_hash(db_user.password_hash, password_payload['current_password']):
+                db_user.password_hash = generate_password_hash(password_payload['new_password'])
+                db.update(db_user)
+                return {'message': 'password is reset'}, 201
+
+
+"""Users Endpoints"""
+api.add_resource(UserRegister, '/register', endpoint="Register")
+api.add_resource(UserLogin, '/login', endpoint="Login")
+api.add_resource(UserLogout, '/logout', endpoint="Logout" )
+api.add_resource(UserResetPassword, '/reset-password', endpoint="Reset-password")

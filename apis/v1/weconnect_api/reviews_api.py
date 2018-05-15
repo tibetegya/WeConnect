@@ -1,48 +1,54 @@
 import datetime
 
-from flask_restplus import Api, Resource, reqparse, fields, marshal_with
+from flask_restplus import Namespace, Api, Resource, fields, marshal_with
 
-from apis.v1 import ns_1 as api
-
-
-review_model = api.model('review',{'title': fields.String('review title.'),
-                # 'id': fields.Integer(1),
-                'body': fields.String('body'),
-                # 'business': fields.Integer(),
-                'author': fields.String('user that created'),
-                # 'creation_date': fields.Date()
-                 })
-
-reviews = []
-
+from apis.v1 import db
+from apis.v1.models.review import ReviewModel
+from apis.v1.models.user import User
+from apis.v1.utils.decorators import authenticate
+from apis.v1.utils.validators import validate_review_payload
+from apis.v1.utils.review_models import api, review_model, reviews_model, review_parser
 
 
 class Review(Resource):
-    """ Class for handling reviews endpoints """
+    """ this class handles the business reviews endpoints """
 
+    @api.header('Authorization', type=str, description ='Authentication token')
+    @authenticate
+    @api.marshal_with(reviews_model, envelope='reviews')
+    def get(self, current_user, token, businessId):
+        """ returns a specific business's reviews """
 
-    @api.marshal_with(review_model, envelope='reviews')
-    def get(self, businessId):
-        """ method for returning reviews for a specific business """
+        # get all reviews where the business id is businessId
+        biz_reviews = ReviewModel.filter_by(business=businessId)
 
-        biz_reviews = []
+        if biz_reviews:
+            return biz_reviews , 200
+        else:
+            return {'message': 'business has no reviews'}, 400
 
-        for rev in reviews:
-            if rev['business'] == businessId:
-                biz_reviews.append(rev)
-
-        return biz_reviews , 200
-
-
+    @api.header('Authorization', type=str, description ='Authentication token')
+    @authenticate
     @api.expect(review_model)
-    # @api.marshal_with(review_model, envelope='reviews')
-    def post(self, businessId):
-        """ method that handles posting a reviews for a specific business """
+    #@api.marshal_with(review_model, envelope='reviews')
+    def post(self, current_user, token, businessId):
+        """ handles posting a review to a specific business """
 
-        new_review = api.payload
-        new_review['id'] = len(reviews)+1
-        new_review['business'] = businessId
-        new_review['creation_date'] = str(datetime.datetime.utcnow())
+        self.businessId = businessId
+        args = review_parser.parse_args()
+        new_review = args
 
-        reviews.append(new_review)
+        is_not_valid_input = validate_review_payload(args)
+        if is_not_valid_input:
+            return is_not_valid_input
+
+        db_user = User.filter_by(user_name=current_user)
+        # Create a new review
+        add_review = ReviewModel(new_review['title'], new_review['body'], self.businessId, db_user.id)
+        db.commit(add_review)
+
         return {'result':'Review Added'}, 201
+
+"""Reviews Endpoints"""
+api.add_resource(Review, '/<int:businessId>/reviews', endpoint="reviews")
+
