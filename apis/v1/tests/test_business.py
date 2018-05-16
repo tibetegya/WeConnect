@@ -4,6 +4,7 @@ import flask
 import json
 
 from apis import app
+from apis.v1.schemas import db
 from apis.v1.tests import ApiTestCase
 from apis.v1.models.business import BusinessModel
 
@@ -33,8 +34,8 @@ class BusinessListTestCase(ApiTestCase):
     def test_api_can_add_business_db(self):
         """ test that api can add a business to the database"""
 
-        added_business = BusinessModel.query.get(1)
-        self.assertEqual('<Business: {}>'.format(self.test_businesses[0]['business_name']), str(added_business))
+        added_business = db.get(BusinessModel, 1)
+        self.assertEqual(self.test_businesses[0]['business_name'], added_business['business_name'])
 
     def test_api_can_update_business(self):
         """ test that api can update a business """
@@ -124,9 +125,9 @@ class BusinessListTestCase(ApiTestCase):
                             data=json.dumps(self.other_businesses[0] ),
                             headers={'Authorization': 'Bearer ' + self.tokens[0]},
                             content_type='application/json')
-        business_changed = BusinessModel.query.get(1)
+        business_changed = db.get(BusinessModel, 1)
 
-        self.assertEqual(business_changed.location, 'gulu')
+        self.assertEqual(business_changed['location'], 'gulu')
 
 
     def test_business_name_is_changed(self):
@@ -136,9 +137,9 @@ class BusinessListTestCase(ApiTestCase):
                             data=json.dumps(self.other_businesses[0] ),
                             headers={'Authorization': 'Bearer ' + self.tokens[0]},
                             content_type='application/json')
-        business_changed = BusinessModel.query.get(1)
+        business_changed = db.get(BusinessModel, 1)
 
-        self.assertEqual(business_changed.business_name, 'vodafone')
+        self.assertEqual(business_changed['business_name'], 'vodafone')
 
 
     def test_business_category_is_changed(self):
@@ -148,9 +149,9 @@ class BusinessListTestCase(ApiTestCase):
                         data=json.dumps(self.other_businesses[0] ),
                         headers={'Authorization': 'Bearer ' + self.tokens[0]},
                         content_type='application/json')
-        business_changed = BusinessModel.query.get(1)
+        business_changed = db.get(BusinessModel, 1)
 
-        self.assertEqual(business_changed.category, 'cellular')
+        self.assertEqual(business_changed['category'], 'cellular')
 
 
     def test_business_profile_is_changed(self):
@@ -160,9 +161,9 @@ class BusinessListTestCase(ApiTestCase):
                             data=json.dumps(self.other_businesses[0] ),
                             headers={'Authorization': 'Bearer ' + self.tokens[0]},
                             content_type='application/json')
-        business_changed = BusinessModel.query.get(1)
+        business_changed = db.get(BusinessModel, 1)
 
-        self.assertEqual(business_changed.profile, 'vodafone profile')
+        self.assertEqual(business_changed['profile'], 'vodafone profile')
 
 
     def test_for_long_business_name_length(self):

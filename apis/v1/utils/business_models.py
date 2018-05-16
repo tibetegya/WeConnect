@@ -10,7 +10,7 @@ business_model = api.model('business', {'business_name': fields.String(),
                             'id': fields.Integer(),
                             'profile': fields.String(),
                             'created_by': fields.String(),
-                            'creation_date': fields.DateTime()})
+                            'creation_date': fields.String()})
 
 post_model = api.model('business post', {'business_name': fields.String('business1'),
                             'category': fields.String('category1'),

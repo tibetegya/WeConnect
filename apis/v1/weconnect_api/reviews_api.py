@@ -2,7 +2,7 @@ import datetime
 
 from flask_restplus import Namespace, Api, Resource, fields, marshal_with
 
-from apis.v1 import db
+from apis.v1.schemas import db
 from apis.v1.models.review import ReviewModel
 from apis.v1.models.user import User
 from apis.v1.utils.decorators import authenticate
@@ -20,7 +20,7 @@ class Review(Resource):
         """ returns a specific business's reviews """
 
         # get all reviews where the business id is businessId
-        biz_reviews = ReviewModel.filter_by(business=businessId)
+        biz_reviews = db.filter_by(ReviewModel, 'id', businessId)
 
         if biz_reviews:
             return biz_reviews , 200
@@ -42,9 +42,9 @@ class Review(Resource):
         if is_not_valid_input:
             return is_not_valid_input
 
-        db_user = User.filter_by(user_name=current_user)
+        db_user = db.filter_by(User, 'user_name', current_user)
         # Create a new review
-        add_review = ReviewModel(new_review['title'], new_review['body'], self.businessId, db_user.id)
+        add_review = ReviewModel(new_review['title'], new_review['body'], self.businessId, db_user['id'])
         db.commit(add_review)
 
         return {'result':'Review Added'}, 201

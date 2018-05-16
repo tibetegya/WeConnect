@@ -4,6 +4,7 @@ import flask
 import json
 
 from apis import app
+from apis.v1.schemas import db
 from apis.v1.tests import ApiTestCase
 from apis.v1.models.review import ReviewModel
 
@@ -34,8 +35,8 @@ class ReviewTestCase(ApiTestCase):
     def test_review_added_to_db(self):
         """ Test that api add a review to the database """
 
-        added_review = ReviewModel.query.get(1)
-        self.assertEqual('<Review: {}>'.format(self.test_reviews[0]['title']), str(added_review))
+        added_review = db.get(ReviewModel,1)
+        self.assertEqual(self.test_reviews[0]['title'], added_review['title'])
 
 
     def test_post_incomplete_review(self):

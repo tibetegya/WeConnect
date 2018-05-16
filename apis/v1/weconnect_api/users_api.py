@@ -9,7 +9,7 @@ import jwt
 import json
 
 from apis import app
-from apis.v1 import db
+from apis.v1.schemas import db
 from apis.v1.models.user import User
 from apis.v1.models.blacklist import Blacklist
 from apis.v1.utils.decorators import authenticate
@@ -33,8 +33,8 @@ class UserRegister(Resource):
             return is_not_valid_input
 
         # Check for an already existent username
-        db_user_with_same_name = User.filter_by(user_name=new_user['user_name'])
-        db_user_with_same_email = User.filter_by(email=new_user['email'])
+        db_user_with_same_name = db.filter_by(User, 'user_name', new_user['user_name'])
+        db_user_with_same_email = db.filter_by(User, 'email', new_user['email'])
 
         if (db_user_with_same_name or db_user_with_same_email) is not None:
             return {'message': 'User Already exists'}, 400
@@ -63,12 +63,12 @@ class UserLogin(Resource):
         password = args['password']
 
         # Check if the user exists
-        db_user = User.filter_by(user_name=user_name)
+        db_user = db.filter_by(User, 'user_name', user_name)
 
         if db_user is not None:
-            if check_password_hash(db_user.password_hash, password):
+            if check_password_hash(db_user['password_hash'], password):
                 token = jwt.encode({
-                                    'user': db_user.user_name,
+                                    'user': db_user['user_name'],
                                     'exp': datetime.datetime.utcnow()
                                         + datetime.timedelta(minutes=100)},
                                     app.config['SECRET_KEY'])
@@ -111,12 +111,12 @@ class UserResetPassword(Resource):
 
         password_payload = args
 
-        db_user = User.filter_by(user_name=current_user)
+        db_user = db.filter_by(User, 'user_name', current_user)
 
         if db_user is not None:
-            if check_password_hash(db_user.password_hash, password_payload['current_password']):
-                db_user.password_hash = generate_password_hash(password_payload['new_password'])
-                db.update(db_user)
+            if check_password_hash(db_user['password_hash'], password_payload['current_password']):
+                db_user['password_hash'] = generate_password_hash(password_payload['new_password'])
+                db.update(User, db_user)
                 return {'message': 'password is reset'}, 201
 
 

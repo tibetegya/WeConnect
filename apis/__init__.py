@@ -16,10 +16,10 @@ def index():
 
 from apis.v2 import v2_blueprint as api_v2
 from apis.v2 import api_2
-# from apis.v1 import v1_blueprint as api_v1
-# from apis.v1 import api_1
+from apis.v1 import v1_blueprint as api_v1
+from apis.v1 import api_1
 
 app.register_blueprint(api_v2)
-# app.register_blueprint(api_v1)
+app.register_blueprint(api_v1)
 
 

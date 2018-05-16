@@ -3,11 +3,11 @@ import datetime
 from flask import request, jsonify
 from flask_restplus import Namespace, Resource, fields, marshal_with
 
-from apis.v1 import db
+from apis.v1.schemas import db, User, BusinessModel
 from apis.v1.utils.decorators import authenticate
 from apis.v1.utils.validators import validate_business_payload, validate_business_update_payload
-from apis.v1.models.user import User
-from apis.v1.models.business import BusinessModel
+# from apis.v1.models.user import User
+# from apis.v1.models.business import BusinessModel
 from apis.v1.utils.business_models import api, business_model, post_model, business_parser, update_business_parser
 
 
@@ -24,12 +24,12 @@ class BusinessList(Resource):
     def get(self, current_user,token):
         """ returns all businesses in the databases """
 
-        businesses = BusinessModel.get_all()
+        businesses = db.get_all(BusinessModel)
 
         return businesses, 200
 
 
-    @api.doc('post biz')
+    @api.doc('post business')
     @api.header('Authorization', type=str, description ='Authentication token')
     @authenticate
     @api.expect(post_model)
@@ -38,22 +38,19 @@ class BusinessList(Resource):
 
         self.current_user = current_user
         args = business_parser.parse_args()
-        new_biz = args
+        new_business = args
         is_not_valid_input = validate_business_payload(args)
 
         if is_not_valid_input:
             return is_not_valid_input
 
-        db_user = User.filter_by(user_name=self.current_user)
+        db_user = db.filter_by(User, 'user_name', self.current_user)
 
         # Adding a business
-        new_business = BusinessModel(new_biz['business_name'], new_biz['category'],
-                            new_biz['location'], new_biz['profile'],db_user.id)
-        db.commit(new_business)
+        added_business = BusinessModel(new_business['business_name'], new_business['category'],
+                            new_business['location'], new_business['profile'],db_user['id'])
+        db.commit(added_business)
 
-        # # Return for added business
-        # added_business = BusinessModel.filter_by(business_name=new_biz['business_name'])
-        # business_list = added_business.business_as_dict()
 
         return {'message': 'business added sucessfully'}, 201
 
@@ -67,9 +64,9 @@ class Business(Resource):
     def get(self, current_user, token, businessId):
         """ returns a specific business """
 
-        find_business = BusinessModel.get(businessId)
-        if find_business is not None:
-            return find_business, 200
+        found_business = db.get(BusinessModel, businessId)
+        if found_business is not None:
+            return found_business, 200
         else:
             return {'message': 'business not found'}, 400
 
@@ -79,9 +76,9 @@ class Business(Resource):
     def put(self, current_user, token, businessId):
         """ updates a specific businesses data """
 
-        business_to_change = BusinessModel.get(businessId)
+        business_to_change = db.get(BusinessModel, businessId)
         args = update_business_parser.parse_args()
-        biz_to_change =  args
+        busines_payload =  args
         is_not_valid_input = validate_business_update_payload(args, businessId)
 
         if is_not_valid_input:
@@ -93,40 +90,40 @@ class Business(Resource):
 
         else:
 
-            db_user = User.filter_by(user_name=current_user)
-            if business_to_change.created_by != db_user.id:
+            db_user = db.filter_by(User,'user_name',current_user)
+            if business_to_change['created_by'] != db_user['id']:
                 return {'message':'You are not authorised to Change this business'}, 403
 
                 # change business name
-            if biz_to_change['business_name'] is not None:
+            if busines_payload['business_name'] is not None:
 
-                test_biz = BusinessModel.filter_by(business_name=args['business_name'])
+                test_business = db.filter_by(BusinessModel,'business_name', args['business_name'])
 
-                if test_biz is not None and test_biz.business_name.lower() != business_to_change.business_name.lower():
+                if test_business is not None and test_business['business_name'].lower() != business_to_change['business_name'].lower():
                     return {'message': 'business name is already taken'}, 400
 
-                if biz_to_change['business_name'] != business_to_change.business_name:
-                    business_to_change.business_name = biz_to_change['business_name']
+                if busines_payload['business_name'] != business_to_change['business_name']:
+                    business_to_change['business_name'] = busines_payload['business_name']
 
                 # change category
-            if biz_to_change['category'] is not None:
+            if busines_payload['category'] is not None:
 
-                if biz_to_change['category'] != business_to_change.category:
-                    business_to_change.category = biz_to_change['category']
+                if busines_payload['category'] != business_to_change['category']:
+                    business_to_change['category'] = busines_payload['category']
 
                 # change location
-            if biz_to_change['location'] is not None:
+            if busines_payload['location'] is not None:
 
-                if biz_to_change['location'] != business_to_change.location:
-                    business_to_change.location = biz_to_change['location']
+                if busines_payload['location'] != business_to_change['location']:
+                    business_to_change['location'] = busines_payload['location']
 
                 # change profile
-            if biz_to_change['profile'] is not None:
+            if busines_payload['profile'] is not None:
 
-                if biz_to_change['profile'] != business_to_change.profile:
-                    business_to_change.profile = biz_to_change['profile']
+                if busines_payload['profile'] != business_to_change['profile']:
+                    business_to_change['profile'] = busines_payload['profile']
 
-            db.update(business_to_change)
+            db.update(BusinessModel, business_to_change)
 
             return {'result': 'business changed successfully'}, 201
 
@@ -136,18 +133,18 @@ class Business(Resource):
     def delete(self, current_user, token, businessId):
         """ deletes a specific businesses """
 
-        business_to_change = BusinessModel.get(businessId)
-        db_user = User.filter_by(user_name=current_user)
+        business_to_change = db.get(BusinessModel, businessId)
+        db_user = db.filter_by(User, 'user_name', current_user)
 
         if business_to_change is None:
             return {'message':'There is no Business with ID : {}'.format(businessId)}, 400
 
         else:
-            if business_to_change.created_by != db_user.id:
+            if business_to_change['created_by'] != db_user['id']:
                 return {'message':'You are not authorised to Change this business'}, 403
 
             else:
-                db.delete(business_to_change)
+                db.delete(BusinessModel, business_to_change)
                 return {'message': 'business deleted'}, 201
 
 

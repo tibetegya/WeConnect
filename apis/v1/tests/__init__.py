@@ -3,7 +3,7 @@ import unittest
 import json
 
 from apis import app
-from apis.v1 import db
+from apis.v1.schemas import db, Blacklist, User, BusinessModel, ReviewModel
 from config import Config, app_config
 
 
@@ -18,7 +18,7 @@ class ApiTestCase(unittest.TestCase):
         self.app.testing = True
         self.client = self.app.test_client
         self.base_url = '/api/v1'
-
+        db.create_all(Blacklist, User, BusinessModel, ReviewModel)
         self.business_list_endpoint = '/businesses'
         self.business_endpoint_1 = '/businesses/1'
         self.business_endpoint_2 = '/businesses/2'

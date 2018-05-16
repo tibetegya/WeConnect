@@ -4,6 +4,7 @@ from flask import request
 import jwt
 
 from apis import app
+from apis.v1.schemas import db
 from apis.v1.models.blacklist import Blacklist
 from apis.v1.models.user import User
 
@@ -23,15 +24,15 @@ def authenticate(f):
             except IndexError:
                 return {'message': 'Token is missing!'}, 401
 
-            token_blacklisted = Blacklist.query.filter_by(token=token).first()
+            token_blacklisted = db.filter_by(Blacklist, 'token', token)
 
             if token_blacklisted is not None:
                 return {'message': 'Token is expired!'}, 401
 
             try:
                 data = jwt.decode(token, app.config['SECRET_KEY'])
-                matched_user = User.query.filter_by(user_name=data['user']).first()
-                current_user = matched_user.user_name
+                matched_user = db.filter_by(User, 'user_name', data['user'])
+                current_user = matched_user['user_name']
 
             except jwt.exceptions.InvalidTokenError:
                 return {'message': 'Token is invalid!'}, 401

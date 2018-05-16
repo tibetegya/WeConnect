@@ -9,11 +9,12 @@ class Blacklist():
 
     id = int()
     token = str()
-    creation_date = datetime
+    creation_date = str()
 
     def __init__(self, token):
+        self.id = int()
         self.token = token
-        self.creation_date = datetime.utcnow()
+        self.creation_date = str(datetime.utcnow())
 
     def __repr__(self):
         return '<Token: {}>'.format(self.token)

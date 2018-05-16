@@ -26,7 +26,7 @@ def migrator():
 
 @manager.command
 def test():
-    tests = unittest.TestLoader().discover('apis/v2/tests', pattern='test*.py')
+    tests = unittest.TestLoader().discover('apis/', pattern='test*.py')
     result = unittest.TextTestRunner(verbosity=2).run(tests)
 
     # if result.wasSuccessful() return 0 else 1
