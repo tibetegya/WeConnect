@@ -24,3 +24,7 @@ checks:
   return-statements:
     config:
       threshold: 10
+exclude_patterns:
+  - "apis/static/"
+  - "apis/templates/"
+  - "**/tests/"
