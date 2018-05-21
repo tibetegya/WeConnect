@@ -10,6 +10,7 @@ from apis.v2.models.user import User
 from apis.v2.models.business import BusinessModel
 from apis.v2.models.blacklist import Blacklist
 
+SEARCH_KEYS = ['location', 'category']
 
 def validate_user_payload(new_user):
     """ this funtion validates the user payload """
@@ -106,3 +107,13 @@ def validate_business_update_payload(new_payload, businessId):
 
     elif len(new_payload['profile']) > 256:
         return {'message': 'profile is too long'}, 400
+
+def validate_search_payload(new_payload):
+    """" this method validates the business update payload """
+
+    for key in SEARCH_KEYS:
+        if new_payload[key] == '':
+            return {'message': '{} is too long'.format(key)}, 400
+        if new_payload[key] is not None:
+            if not re.match(r'^[\w\s]+$', new_payload[key]):
+                return {'message': 'Enter valid search arguments'}, 400

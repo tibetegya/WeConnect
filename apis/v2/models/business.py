@@ -16,7 +16,7 @@ class BusinessModel(db.Model):
     creation_date = db.Column(db.DateTime, default=db.func.current_timestamp())
     update_date = db.Column(db.DateTime, default=db.func.current_timestamp(),
                                 onupdate=db.func.current_timestamp())
-
+    creator = db.relationship('User')
     reviews = db.relationship('ReviewModel',order_by='ReviewModel.id',
                                 cascade='all, delete-orphan')
 
@@ -26,6 +26,11 @@ class BusinessModel(db.Model):
         self.location = location
         self.profile = profile
         self.created_by = current_user
+
+    def as_dict(self):
+        business_dict = {c.name: str(getattr(self, c.name)) for c in self.__table__.columns}
+        business_dict['creator'] = self.creator.user_name
+        return business_dict
 
     def __repr__(self):
         return '<Business: {}>'.format(self.business_name)

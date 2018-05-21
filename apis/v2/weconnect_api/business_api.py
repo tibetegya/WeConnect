@@ -5,10 +5,14 @@ from flask_restplus import Namespace, Resource, fields, marshal_with
 
 from apis import db
 from apis.v2.utils.decorators import authenticate
-from apis.v2.utils.validators import validate_business_payload, validate_business_update_payload
+from apis.v2.utils.validators import validate_business_payload, validate_business_update_payload, validate_search_payload
 from apis.v2.models.user import User
 from apis.v2.models.business import BusinessModel
-from apis.v2.utils.business_models import api, business_model, post_model, business_parser, update_business_parser
+from apis.v2.utils.business_models import api, business_model, post_model
+from apis.v2.utils.business_models import business_parser, update_business_parser, search_parser
+
+
+SEARCH_KEYS = ['location', 'category']
 
 
 class BusinessList(Resource):
@@ -20,19 +24,44 @@ class BusinessList(Resource):
             401: 'Bearer Authentication Error'}, id='get_all_businesses' )
     @api.header('Authorization', type=str, description ='Authentication token')
     @authenticate
-    @api.marshal_with(business_model, code=200, description='Displays a list of registered Businesses')
+    # @api.m(business_model, code=200, description='Displays a list of registered Businesses')
     def get(self, current_user,token):
         """ returns all businesses in the databases """
+        args = search_parser.parse_args()
+        is_not_valid_input = validate_search_payload(args)
 
-        businesses = BusinessModel.query.all()
+        if is_not_valid_input:
+            return is_not_valid_input
 
-        return businesses, 200
+        if args['q'] is not None:
+            businesses_query = (BusinessModel.query.filter(
+                            BusinessModel.business_name.ilike('%'+args['q']+'%')))
+        else:
+            businesses_query = BusinessModel.query
+
+        if args['location'] is not None:
+            businesses_query = businesses_query.filter_by(location=args['location'])
+        if args['category'] is not None:
+            businesses_query = businesses_query.filter_by(category=args['category'])
+
+        businesses_paginated = businesses_query.paginate(page=args['page'],
+                                                    per_page=args['limit'], error_out=False)
+        businesses = businesses_paginated.items
+        businesses = to_list(businesses)
+
+        next_page = businesses_paginated.next_num if businesses_paginated.has_next else None
+        prev_page = businesses_paginated.prev_num if businesses_paginated.has_prev else None
+        businesses_response = {"businesses": businesses,
+                                "next_page": next_page, "prev_page": prev_page}
+
+        return businesses_response, 200
 
 
     @api.doc('post biz')
     @api.header('Authorization', type=str, description ='Authentication token')
     @authenticate
     @api.expect(post_model)
+    @api.marshal_with(business_model, code=200, description='Displays added business')
     def post(self, current_user,token):
         """ posts a business """
 
@@ -51,12 +80,9 @@ class BusinessList(Resource):
                             new_biz['location'], new_biz['profile'],db_user.id)
         db.session.add(new_business)
         db.session.commit()
+        business = new_business.as_dict()
 
-        # # Return for added business
-        # added_business = BusinessModel.query.filter_by(business_name=new_biz['business_name']).first()
-        # business_list = added_business.business_as_dict()
-
-        return {'message': 'business added sucessfully'}, 201
+        return business, 201
 
 
 class Business(Resource):
@@ -153,6 +179,10 @@ class Business(Resource):
                 return {'message': 'business deleted'}, 201
 
 
+
+@api.marshal_with(business_model)
+def to_list(businesses_query):
+    return list(b.as_dict() for b in businesses_query if businesses_query)
 
 """Business Endpoints"""
 api.add_resource(Business, '/<int:businessId>', endpoint="business")

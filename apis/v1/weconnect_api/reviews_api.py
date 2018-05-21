@@ -4,6 +4,7 @@ from flask_restplus import Namespace, Api, Resource, fields, marshal_with
 
 from apis.v1.schemas import db
 from apis.v1.models.review import ReviewModel
+from apis.v1.models.business import BusinessModel
 from apis.v1.models.user import User
 from apis.v1.utils.decorators import authenticate
 from apis.v1.utils.validators import validate_review_payload
@@ -20,8 +21,7 @@ class Review(Resource):
         """ returns a specific business's reviews """
 
         # get all reviews where the business id is businessId
-        biz_reviews = db.filter_by(ReviewModel, 'id', businessId)
-
+        biz_reviews = db.filter_by(ReviewModel, 'business', businessId)
         if biz_reviews:
             return biz_reviews , 200
         else:

@@ -20,17 +20,18 @@ class Review(Resource):
         """ returns a specific business's reviews """
 
         # get all reviews where the business id is businessId
-        biz_reviews = ReviewModel.query.filter_by(business=businessId).all()
+        reviews_query = ReviewModel.query.filter_by(business=businessId).all()
 
-        if biz_reviews:
-            return biz_reviews , 200
+        if reviews_query:
+            reviews = list(r.as_dict() for r in reviews_query if reviews_query)
+            return reviews , 200
         else:
             return {'message': 'business has no reviews'}, 400
 
     @api.header('Authorization', type=str, description ='Authentication token')
     @authenticate
     @api.expect(review_model)
-    #@api.marshal_with(review_model, envelope='reviews')
+    @api.marshal_with(reviews_model, envelope='reviews')
     def post(self, current_user, token, businessId):
         """ handles posting a review to a specific business """
 
@@ -44,11 +45,13 @@ class Review(Resource):
 
         db_user = User.query.filter_by(user_name=current_user).first()
         # Create a new review
-        add_review = ReviewModel(new_review['title'], new_review['body'], self.businessId, db_user.id)
-        db.session.add(add_review)
+        new_review = ReviewModel(new_review['title'], new_review['body'], self.businessId, db_user.id)
+        db.session.add(new_review)
         db.session.commit()
+        review = new_review.as_dict()
 
-        return {'result':'Review Added'}, 201
+
+        return review, 201
 
 """Reviews Endpoints"""
 api.add_resource(Review, '/<int:businessId>/reviews', endpoint="reviews")

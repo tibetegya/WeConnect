@@ -16,7 +16,7 @@ class ReviewTestCase(ApiTestCase):
     def test_get_all_reviews_for_a_business(self):
 
         res = self.client().get(self.base_url+self.review_endpoint,
-                                headers={'Authorization': 'Bearer ' + self.tokens[0]},)
+                                headers={'Authorization': 'Bearer ' + self.tokens[0]})
 
         self.assertEqual(res.status_code, 200)
 

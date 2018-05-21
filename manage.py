@@ -19,14 +19,15 @@ manager.add_command('db', MigrateCommand)
 
 @manager.command
 def migrator():
-    os.system('export FLASK_APP=run.py')
-    os.system('flask db init')
-    os.system('flask db migrate')
-    os.system('flask db upgrade')
+    run = 'python manage.py  db'
+    if not os.path.isdir('./migrations'):
+        os.system('{} init'.format(run))
+    os.system('{} migrate'.format(run))
+    os.system('{} upgrade'.format(run))
 
 @manager.command
 def test():
-    tests = unittest.TestLoader().discover('apis/', pattern='test*.py')
+    tests = unittest.TestLoader().discover('apis/v2', pattern='test*.py')
     result = unittest.TextTestRunner(verbosity=2).run(tests)
 
     # if result.wasSuccessful() return 0 else 1
