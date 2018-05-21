@@ -10,7 +10,7 @@ from apis.v1.utils.validators import validate_business_payload, validate_busines
 # from apis.v1.models.business import BusinessModel
 from apis.v1.utils.business_models import api, business_model, post_model, business_parser, update_business_parser
 
-
+PAYLOAD_KEYS = ['business_name','category','location','profile']
 class BusinessList(Resource):
     """Class Representing Businesses Endpoints  """
 
@@ -95,33 +95,45 @@ class Business(Resource):
                 return {'message':'You are not authorised to Change this business'}, 403
 
                 # change business name
-            if busines_payload['business_name'] is not None:
+            for key in PAYLOAD_KEYS:
+                if key == 'business_name':
+                    test_business = db.filter_by(BusinessModel,'business_name', args['business_name'])
 
-                test_business = db.filter_by(BusinessModel,'business_name', args['business_name'])
+                    if test_business is not None and test_business['business_name'].lower() != business_to_change['business_name'].lower():
+                        return {'message': 'business name is already taken'}, 400
 
-                if test_business is not None and test_business['business_name'].lower() != business_to_change['business_name'].lower():
-                    return {'message': 'business name is already taken'}, 400
+                if busines_payload[key] is not None:
 
-                if busines_payload['business_name'] != business_to_change['business_name']:
-                    business_to_change['business_name'] = busines_payload['business_name']
+                    if busines_payload[key] != business_to_change[key]:
+                        business_to_change[key] = busines_payload[key]
 
-                # change category
-            if busines_payload['category'] is not None:
+            # if busines_payload['business_name'] is not None:
 
-                if busines_payload['category'] != business_to_change['category']:
-                    business_to_change['category'] = busines_payload['category']
+            #     test_business = db.filter_by(BusinessModel,'business_name', args['business_name'])
 
-                # change location
-            if busines_payload['location'] is not None:
+            #     if test_business is not None and test_business['business_name'].lower() != business_to_change['business_name'].lower():
+            #         return {'message': 'business name is already taken'}, 400
 
-                if busines_payload['location'] != business_to_change['location']:
-                    business_to_change['location'] = busines_payload['location']
+            #     if busines_payload['business_name'] != business_to_change['business_name']:
+            #         business_to_change['business_name'] = busines_payload['business_name']
 
-                # change profile
-            if busines_payload['profile'] is not None:
+            #     # change category
+            # if busines_payload['category'] is not None:
 
-                if busines_payload['profile'] != business_to_change['profile']:
-                    business_to_change['profile'] = busines_payload['profile']
+            #     if busines_payload['category'] != business_to_change['category']:
+            #         business_to_change['category'] = busines_payload['category']
+
+            #     # change location
+            # if busines_payload['location'] is not None:
+
+            #     if busines_payload['location'] != business_to_change['location']:
+            #         business_to_change['location'] = busines_payload['location']
+
+            #     # change profile
+            # if busines_payload['profile'] is not None:
+
+            #     if busines_payload['profile'] != business_to_change['profile']:
+            #         business_to_change['profile'] = busines_payload['profile']
 
             db.update(BusinessModel, business_to_change)
 
