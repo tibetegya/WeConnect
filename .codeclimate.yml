@@ -28,3 +28,4 @@ exclude_patterns:
   - "apis/static/"
   - "apis/templates/"
   - "**/tests/"
+  - "**/*_models.py"
