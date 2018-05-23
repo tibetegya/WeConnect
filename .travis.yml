@@ -13,8 +13,8 @@ env:
   - DATABASE_URL=postgresql://tibzy@localhost/test_weconnectdb SECRET_KEY=some_secret_value APP_SETTINGS=config.TestingConfig
 
 script:
-  - pytest apis/v2.
-  - coverage run --source='apis/v2' manage.py test
+  - pytest apis/v2/.
+  - coverage run --source='apis/v2/' manage.py test
   - coverage report
 after_success:
   - coveralls
