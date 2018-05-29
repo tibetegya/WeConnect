@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask,  Blueprint, render_template
+from flask import Flask,  Blueprint, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -23,3 +23,6 @@ app.register_blueprint(api_v2)
 app.register_blueprint(api_v1)
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return jsonify(error=404, text='could not find requested data'), 404

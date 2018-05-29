@@ -23,6 +23,16 @@ class UserTestCase(ApiTestCase):
         self.assertEqual(res.status_code, 201)
 
 
+    def test_reset_with_wrong_email(self):
+        """tests that the api can not reset a users password with wrong email. """
+
+        res = self.client().post(self.base_url+self.user_reset_password_endpoint,
+                                data=json.dumps(self.reset_payload['wrong_email']),
+                                headers={'Authorization': 'Bearer {}'.format(self.tokens[0]) },
+                                content_type='application/json')
+
+        self.assertEqual(res.status_code, 400)
+
     def test_user_cannot_reset_password_with_no_payload(self):
         """tests that the api rejects password reset payload that is empty """
 

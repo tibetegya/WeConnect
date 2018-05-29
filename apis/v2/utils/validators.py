@@ -27,12 +27,15 @@ def validate_user_payload(new_user):
         return {'message': 'Password Cannot be empty'}, 400
 
     # Check for a valid user name
-    if not re.match(r'^\w+$', new_user['user_name']):
+    if not re.match(r'^[a-zA-Z0-9_.+-]+$', new_user['user_name'].strip(' ')):
         return {'message': 'Enter a valid Username'}, 400
+    
+    if new_user['user_name'].strip(' ').isdigit():
+        return {'message': 'Enter a non digit Username'}, 400
 
     # Check for a valid email
-    is_valid_mail = validate_email(new_user['email'])
-    if not is_valid_mail:
+    if not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",
+            new_user['email'].strip(' ')):
         return {'message': 'Enter a Valid Email Address'}, 400
 
     # Check for large/long inputs
@@ -49,11 +52,11 @@ def validate_reset_payload(new_user):
     """ this endpoint validates password reset payload """
 
     # Check for empty current password
-    if new_user['current_password'] == '':
-        return {'message': 'Old Password Cannot be empty'}, 400
+    if new_user['email'].strip(' ') == '':
+        return {'message': 'email Cannot be empty'}, 400
 
     # Check for empty current password
-    elif new_user['new_password'] == '':
+    elif new_user['new_password'].strip(' ') == '':
         return {'message': 'New Password Cannot be empty'}, 400
 
 
@@ -61,33 +64,43 @@ def validate_review_payload(new_payload):
     """this method validates the review payload """
 
     if new_payload['title'] == '':
-            return {'message': 'title can\'t be empty'}, 400
+        return {'message': 'title can\'t be empty'}, 400
 
     if new_payload['body'] == '':
-            return {'message': 'body can\'t be empty'}, 400
+        return {'message': 'body can\'t be empty'}, 400
 
     if len(new_payload['title']) > 50:
-            return {'message': 'title is too long'}, 400
+        return {'message': 'title is too long'}, 400
 
     elif len(new_payload['body']) > 256:
-            return {'message': 'body is too long'}, 400
+        return {'message': 'body is too long'}, 400
 
 
 def validate_business_payload(new_payload):
     """ this method validate the business payload """
 
+    if new_payload['business_name'].strip(' ') == '':
+        return {'message': 'business name cannot be empty'}, 400
+    if not re.match(r'^[ ?a-zA-Z0-9_.+-]+$', new_payload['business_name'].strip(' ')):
+        return {'message': 'Enter a valid Business name '}, 400
+
+    if new_payload['business_name'].strip(' ').isdigit():
+        return {'message': 'Enter a non digit Business name'}, 400
+
+    if new_payload['category'].strip(' ') == '':
+        return {'message': 'category cannot be empty'}, 400
 
     if len(new_payload['business_name']) > 50:
-            return {'message': 'name is too long'}, 400
+        return {'message': 'name is too long'}, 400
 
     if len(new_payload['category']) > 50:
-            return {'message': 'body is too long'}, 400
+        return {'message': 'body is too long'}, 400
 
     if len(new_payload['location']) > 50:
-            return {'message': 'location is too long'}, 400
+        return {'message': 'location is too long'}, 400
 
     if len(new_payload['profile']) > 256:
-            return {'message': 'profile is too long'}, 400
+        return {'message': 'profile is too long'}, 400
 
 
 def validate_business_update_payload(new_payload, businessId):
@@ -107,6 +120,14 @@ def validate_business_update_payload(new_payload, businessId):
 
     elif len(new_payload['profile']) > 256:
         return {'message': 'profile is too long'}, 400
+
+    if new_payload['business_name'].strip(' ') == '':
+        return {'message': 'business name cannot be empty'}, 400
+    if not re.match(r'^[ ?a-zA-Z0-9_.+-]+$', new_payload['business_name'].strip(' ')):
+        return {'message': 'an not update business without a valid Business name '}, 400
+
+    if new_payload['business_name'].strip(' ').isdigit():
+        return {'message': 'Can not update business with a non digit Business Name'}, 400
 
 def validate_search_payload(new_payload):
     """" this method validates the business update payload """

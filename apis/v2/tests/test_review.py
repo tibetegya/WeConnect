@@ -13,9 +13,9 @@ class ReviewTestCase(ApiTestCase):
 
 
     def test_get_all_reviews_for_a_business(self):
+        """ Tests that Reviews Endpoint returns a review """
 
-        res = self.client().get(self.base_url+self.review_endpoint,
-                                headers={'Authorization': 'Bearer ' + self.tokens[0]},)
+        res = self.client().get(self.base_url+self.review_endpoint)
 
         self.assertEqual(res.status_code, 200)
 
@@ -23,13 +23,33 @@ class ReviewTestCase(ApiTestCase):
     def test_can_post_review(self):
         """ Test that api can post a review """
 
-        res = self.client().post(self.base_url+self.review_endpoint,
+        res = self.client().post(self.base_url+self.review_endpoint2,
                                 data=json.dumps(self.other_reviews[0]),
                                 headers={'Authorization': 'Bearer ' + self.tokens[0]},
                                 content_type='application/json')
 
         self.assertEqual(res.status_code, 201)
 
+    def test_post_review_non_existent_business(self):
+        """ Test that api can not post a review to non existent business"""
+
+        res = self.client().post(self.base_url+self.review_endpoint_900,
+                                data=json.dumps(self.other_reviews[0]),
+                                headers={'Authorization': 'Bearer ' + self.tokens[0]},
+                                content_type='application/json')
+
+        self.assertEqual(res.status_code, 400)
+
+
+    def test_business_owner_can_not_post_review(self):
+        """ Test that api rejects a review post from the business owner  """
+
+        res = self.client().post(self.base_url+self.review_endpoint,
+                                data=json.dumps(self.other_reviews[0]),
+                                headers={'Authorization': 'Bearer ' + self.tokens[0]},
+                                content_type='application/json')
+
+        self.assertEqual(res.status_code, 403)
 
     def test_review_added_to_db(self):
         """ Test that api add a review to the database """
@@ -107,3 +127,12 @@ class ReviewTestCase(ApiTestCase):
                                 headers={'Authorization': 'Bearer ' + self.tokens[0]})
 
         self.assertEqual(res.status_code, 400)
+
+
+    def test_error_handler(self):
+        """ Test that api can not get a review/s for non existing business"""
+
+        res = self.client().get(self.base_url+'fakeendpoint',
+                                headers={'Authorization': 'Bearer ' + self.tokens[0]})
+
+        self.assertEqual(res.status_code, 404)

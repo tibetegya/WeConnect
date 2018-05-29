@@ -1,5 +1,6 @@
 from apis import db
-
+from apis.v2.utils.business_models import api, business_model
+from flask_restplus import marshal_with
 
 class BusinessModel(db.Model):
     """Class to create a Business class object"""
@@ -27,6 +28,7 @@ class BusinessModel(db.Model):
         self.profile = profile
         self.created_by = current_user
 
+    @api.marshal_with(business_model)
     def as_dict(self):
         business_dict = {c.name: str(getattr(self, c.name)) for c in self.__table__.columns}
         business_dict['creator'] = self.creator.user_name

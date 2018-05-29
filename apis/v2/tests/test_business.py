@@ -30,6 +30,27 @@ class BusinessListTestCase(ApiTestCase):
 
         self.assertEqual(res.status_code, 201)
 
+
+    def test_post_empty_category(self):
+        """ test that api cannot post a business with empty category """
+        self.other_businesses[0]['category'] = '  '
+        res = self.client().post(self.base_url+self.business_list_endpoint,
+                                data=json.dumps(self.other_businesses[0]),
+                                headers={'Authorization': 'Bearer ' + self.tokens[0]},
+                                content_type='application/json')
+
+        self.assertEqual(res.status_code, 400)
+
+    def test_post_empty_business_name(self):
+        """ test that api cannot post a business with empty business name """
+        self.other_businesses[0]['business_name'] = '  '
+        res = self.client().post(self.base_url+self.business_list_endpoint,
+                                data=json.dumps(self.other_businesses[0]),
+                                headers={'Authorization': 'Bearer ' + self.tokens[0]},
+                                content_type='application/json')
+
+        self.assertEqual(res.status_code, 400)
+
     def test_api_can_add_business_db(self):
         """ test that api can add a business to the database"""
 
@@ -127,3 +148,34 @@ class BusinessListTestCase(ApiTestCase):
                                 content_type='application/json')
 
         self.assertEqual(res.status_code, 400)
+
+    def test_api_rejects_post_business(self):
+        """ test that api can reject posting an existent business """
+
+        res = self.client().post(self.base_url+self.business_list_endpoint,
+                                data=json.dumps(self.test_businesses[0]),
+                                headers={'Authorization': 'Bearer ' + self.tokens[0]},
+                                content_type='application/json')
+
+        self.assertEqual(res.status_code, 400)
+
+    def test_api_rejects_put_business(self):
+        """ test that api can reject updating an existent business """
+
+        res = self.client().put(self.base_url+self.business_endpoint_1,
+                                data=json.dumps(self.test_businesses[2]),
+                                headers={'Authorization': 'Bearer ' + self.tokens[0]},
+                                content_type='application/json')
+
+        self.assertEqual(res.status_code, 400)
+
+    def test_search_string_works_(self):
+        """ test that search string works """
+
+        res = self.client().get(self.base_url+self.business_list_endpoint+
+                    '?q=andela&location=gulu&category=appliances&limit=1&page=1',
+                                data=json.dumps(self.test_businesses[1]),
+                                headers={'Authorization': 'Bearer ' + self.tokens[0]},
+                                content_type='application/json')
+
+        self.assertEqual(res.status_code, 200)

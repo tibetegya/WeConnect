@@ -30,7 +30,7 @@ update_business_parser.add_argument('location', type=str, help='user name should
 update_business_parser.add_argument('profile', type=str, help='user name should be a string', location='json')
 
 search_parser = reqparse.RequestParser()
-search_parser.add_argument('limit', type=int, trim=True,  default=2, location='args')
+search_parser.add_argument('limit', type=int, trim=True,  default=8, location='args')
 search_parser.add_argument('location', type=str, trim=True, location='args')
 search_parser.add_argument('category', type=str, trim=True, location='args')
 search_parser.add_argument('q', type=str, trim=True, location='args')

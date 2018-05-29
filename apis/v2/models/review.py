@@ -1,4 +1,6 @@
 from apis import db
+from apis.v2.utils.review_models import api, reviews_model
+from flask_restplus import marshal_with
 
 
 class ReviewModel(db.Model):
@@ -23,6 +25,7 @@ class ReviewModel(db.Model):
         self.business = business
         self.author_id = db_user
 
+    @api.marshal_with(reviews_model, envelope='reviews')
     def as_dict(self):
         business_dict = {c.name: str(getattr(self, c.name)) for c in self.__table__.columns}
         business_dict['author'] = self.author.user_name

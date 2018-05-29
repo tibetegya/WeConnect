@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash,  check_password_hash, safe
 from flask import Flask, request, jsonify
 from flask_restplus import Namespace, Api, Resource, reqparse, fields, marshal_with
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
 import jwt
 import json
 
@@ -33,22 +34,21 @@ class UserRegister(Resource):
             return is_not_valid_input
 
         # Check for an already existent username
-        db_user_with_same_name = User.query.filter_by(user_name=new_user['user_name']).first()
+        db_user_with_same_name = User.query.filter_by(user_name=new_user['user_name'].strip(' ')).first()
         db_user_with_same_email = User.query.filter_by(email=new_user['email']).first()
 
         if (db_user_with_same_name or db_user_with_same_email) is not None:
             return {'message': 'User Already exists'}, 400
 
         # Register the User
-        user_name = new_user['user_name'].strip()
-        email = new_user['email'].strip()
+        user_name = new_user['user_name'].strip(' ')
+        email = new_user['email'].strip(' ')
         password = new_user['password']
 
         user_object = User(user_name, email, password)
         db.session.add(user_object)
         db.session.commit()
         return {'result': 'You Are Registered'}, 201
-
 
 class UserLogin(Resource):
     """ this class handles the loggong in of a user """
@@ -102,9 +102,8 @@ class UserResetPassword(Resource):
     """ this Class handles resetting of the users password """
 
     @api.header('Authorization', type=str, description ='Authentication token')
-    @authenticate
     @api.expect(reset_model)
-    def post(self, current_user, token):
+    def post(self):
         """resets user's password """
 
         args = reset_parser.parse_args()
@@ -115,13 +114,15 @@ class UserResetPassword(Resource):
 
         password_payload = args
 
-        db_user = User.query.filter_by(user_name=current_user).first()
+        db_user = User.query.filter_by(email=args['email'].strip(' ')).first()
 
         if db_user is not None:
-            if check_password_hash(db_user.password_hash, password_payload['current_password']):
-                db_user.password_hash = generate_password_hash(password_payload['new_password'])
-                db.session.commit()
-                return {'message': 'password is reset'}, 201
+
+            db_user.password_hash = generate_password_hash(password_payload['new_password'])
+            db.session.commit()
+            return {'message': 'password is reset'}, 201
+        else:
+            return {'message': 'email is not valid'}, 400
 
 
 """Users Endpoints"""

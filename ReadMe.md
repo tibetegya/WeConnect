@@ -4,9 +4,9 @@
 
 This repository contains the Andela Challenge Project
 
-[![Build Status](https://travis-ci.org/tibetegya/WeConnect.svg?branch=api_v2)](https://travis-ci.org/tibetegya/WeConnect)
+[![Build Status](https://travis-ci.org/tibetegya/WeConnect.svg?branch=cp-feedback)](https://travis-ci.org/tibetegya/WeConnect)
 [![Maintainability](https://api.codeclimate.com/v1/badges/3dbd33931a68c9f94865/maintainability)](https://codeclimate.com/github/tibetegya/WeConnect/maintainability)
-[![Coverage Status](https://coveralls.io/repos/github/tibetegya/WeConnect/badge.svg?branch=api_v2)](https://coveralls.io/github/tibetegya/WeConnect?branch=api_v2)
+[![Coverage Status](https://coveralls.io/repos/github/tibetegya/WeConnect/badge.svg?branch=cp-feedback)](https://coveralls.io/github/tibetegya/WeConnect?branch=api_v2)
 
 ## Description
 

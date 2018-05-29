@@ -31,6 +31,7 @@ class ApiTestCase(unittest.TestCase):
         self.user_reset_password_endpoint = '/auth/reset-password'
 
         self.review_endpoint = '/businesses/1/reviews'
+        self.review_endpoint2 = '/businesses/2/reviews'
         self.review_endpoint_900 = '/businesses/900/reviews'
 
         self.test_users = [ { 'user_name': 'george', 'email': 'george@andela.com', 'password': 'tibetegya'},
@@ -54,13 +55,14 @@ class ApiTestCase(unittest.TestCase):
                                 'invalid email': {'user_name': 'bobby', 'email': 'bobcom', 'password': 'bobby'}
 
         }
-        self.reset_payload = {'both': {'current_password': 'tibetegya','new_password': 'tibzy'},
+        self.reset_payload = {'both': {'email': 'george@andela.com','new_password': 'tibzy'},
                                 'none':{},
-                                'only old':{'current_password': 'tibetegya'},
+                                'wrong_email': {'email': 'tibzy@andela.com','new_password': 'tibzy'},
+                                'only old':{'email': 'george@andela.com'},
                                 'only new':{'new_password': 'tibzy'},
-                                'empty new':{'current_password': 'tibetegya','new_password': ''},
-                                'empty old':{'current_password': '','new_password': 'tibzy'},
-                                'both empty':{'current_password': '','new_password': ''}}
+                                'empty new':{'email': 'george@andela.com','new_password': ''},
+                                'empty old':{'email': '','new_password': 'tibzy'},
+                                'both empty':{'email': '','new_password': ''}}
 
         self.test_businesses = [ {'business_name': 'airtel','category': 'telcom','location': 'kampala','profile': 'airtel profile' },
                                  {'business_name': 'safe boda','category': 'transport','location': 'kampala','profile': 'safe boda profile' },
@@ -107,7 +109,7 @@ class ApiTestCase(unittest.TestCase):
 
         # Add reviews to a business
         for review in self.test_reviews:
-            self.add_test_reviews(review, self.tokens[0])
+            self.add_test_reviews(review, self.tokens[1])
 
 
     def tearDown(self):

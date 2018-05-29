@@ -13,7 +13,7 @@ login_model = api.model('user_login', {
                                 })
 
 reset_model = api.model('password_reset', {
-                                'current_password': fields.String('Password'),
+                                'email': fields.String('email'),
                                 'new_password': fields.String('New Password')
                                 })
 
@@ -27,5 +27,5 @@ login_parser = register_parser.copy()
 login_parser.remove_argument('email')
 
 reset_parser = reqparse.RequestParser()
-reset_parser.add_argument('current_password', required=True, help='current password is required', location='json')
+reset_parser.add_argument('email', required=True, help='email is required', location='json')
 reset_parser.add_argument('new_password', required=True, help='new password is required', location='json')
