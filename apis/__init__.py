@@ -2,10 +2,12 @@ import os
 
 from flask import Flask,  Blueprint, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 
 
 from config import Config, app_config
 app = Flask(__name__)
+CORS(app)
 app.config.from_object(app_config[os.environ.get('ENVIRON', 'production')])
 
 db = SQLAlchemy(app)
