@@ -40,9 +40,13 @@ class BusinessList(Resource):
             businesses_query = BusinessModel.query
 
         if args['location'] is not None:
-            businesses_query = businesses_query.filter_by(location=args['location'].strip(' '))
+            businesses_query = (businesses_query.filter(
+                            BusinessModel.location.ilike('%'+args['location'].strip(' ')+'%'))) 
         if args['category'] is not None:
             businesses_query = businesses_query.filter_by(category=args['category'].strip(' '))
+        business_creator = User.query.filter_by(user_name=current_user).first()
+        if args['creator'] is not None:
+            businesses_query = businesses_query.filter_by(created_by=business_creator.id)
 
         businesses_paginated = businesses_query.paginate(page=args['page'],
                                                     per_page=args['limit'], error_out=False)

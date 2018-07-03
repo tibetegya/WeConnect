@@ -48,7 +48,7 @@ class UserRegister(Resource):
         user_object = User(user_name, email, password)
         db.session.add(user_object)
         db.session.commit()
-        return {'result': 'You Are Registered'}, 201
+        return {'message': 'You Are Registered'}, 201
 
 class UserLogin(Resource):
     """ this class handles the loggong in of a user """
@@ -74,6 +74,8 @@ class UserLogin(Resource):
                                         + datetime.timedelta(minutes=100)},
                                     app.config['SECRET_KEY'])
                 verified = True
+            else:
+                return {'message': 'Incorrect password'}, 403
 
         if verified:
             return {'token': token.decode('UTF-8')}, 200
@@ -95,7 +97,7 @@ class UserLogout(Resource):
         db.session.add(token_black_listed)
         db.session.commit()
 
-        return {'result': 'you are logged out'}, 200
+        return {'message': 'you are logged out'}, 200
 
 
 class UserResetPassword(Resource):

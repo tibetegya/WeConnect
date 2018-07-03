@@ -26,7 +26,7 @@ class Review(Resource):
             reviews = list(r.as_dict() for r in reviews_query if reviews_query)
             return reviews , 200
         else:
-            return {'message': 'business does not exist'}, 400
+            return {'message': 'business has no reviews'}, 200
 
     @api.header('Authorization', type=str, description ='Authentication token')
     @authenticate

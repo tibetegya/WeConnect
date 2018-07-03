@@ -25,11 +25,13 @@ class ReviewModel(db.Model):
         self.business = business
         self.author_id = db_user
 
-    @api.marshal_with(reviews_model, envelope='reviews')
+    @api.marshal_with(reviews_model)
     def as_dict(self):
-        business_dict = {c.name: str(getattr(self, c.name)) for c in self.__table__.columns}
-        business_dict['author'] = self.author.user_name
-        return business_dict
+        review_dict = {c.name: str(getattr(self, c.name)) for c in self.__table__.columns}
+        review_dict['author'] = self.author.user_name
+        review_dict['creation_date'] = str(review_dict['creation_date']).split(' ')[0]
+        review_dict['update_date'] = str(review_dict['update_date']).split(' ')[0]
+        return review_dict
 
     def __repr__(self):
         return '<Review: {}>'.format(self.title)

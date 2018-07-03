@@ -5,6 +5,7 @@ api = Namespace('reviews', path='/businesses', description='Reviews endpoints')
 
 
 reviews_model = api.model('review',{'title': fields.String(),
+                'id': fields.Integer(),
                 'body': fields.String(),
                 'author': fields.String(),
                 'creation_date' : fields.String() })
