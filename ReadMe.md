@@ -1,12 +1,13 @@
 # WeConnect
 
+[![CircleCI](https://circleci.com/gh/tibetegya/WeConnect.svg?style=svg)](https://circleci.com/gh/tibetegya/WeConnect)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/3dbd33931a68c9f94865/test_coverage)](https://codeclimate.com/github/tibetegya/WeConnect/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/3dbd33931a68c9f94865/maintainability)](https://codeclimate.com/github/tibetegya/WeConnect/maintainability)
+
 ![banner](images/banner.png)
 
 This repository contains the Andela Challenge Project
 
-[![Build Status](https://travis-ci.org/tibetegya/WeConnect.svg?branch=master)](https://travis-ci.org/tibetegya/WeConnect)
- [![Maintainability](https://api.codeclimate.com/v1/badges/3dbd33931a68c9f94865/maintainability)](https://codeclimate.com/github/tibetegya/WeConnect/maintainability)
- [![Coverage Status](https://coveralls.io/repos/github/tibetegya/WeConnect/badge.svg?branch=master)](https://coveralls.io/github/tibetegya/WeConnect?branch=master)
 
 ## Description
 
@@ -46,16 +47,18 @@ In order to run the API Application
     - Run this command in git bash to create the repo locally
     `git clone https://github.com/tibetegya/WeConnect.git`
 
-2. Create a virtual environment inside api-appliction folder using in a terminal shell  `virtualenv  ENV`
+2. Create a virtual environment inside api-appliction folder using in a terminal shell  `virtualenv  venv`
 
-3. Activate the virtual environment but running the following command `env\scripts\activate`
+3. Activate the virtual environment but running the following command `venv\scripts\activate`
 
 4. Install the dependencies by running the following command in a terminal shell `pip install requirements.txt`
 
-5. Now set Flask App name by running  `export FLASK_APP = run.py` (for Linux and Mac)
+5. Now set Flask App name by running  `export FLASK_APP = weconnect` (for Linux and Mac)
     In case you are on Windows use  `set`  instead of  ~~`export`~~
 
-6. Run the application by running commands `flask run`
+6. You can set the environment variables in a `.env` file. For example you can find a sample `sample.env`
+
+7. Run the application by running commands `flask run`
 
 ## API End points
 
@@ -75,12 +78,12 @@ In order to run the API Application
 
 1. Test the endpoints using [Postman](https://www.getpostman.com/) or [Curl](https://curl.haxx.se/)
 
-2. Use Pytest to test the endpoints For example Run `pytest tests.py`
+2. Use Pytest to test the endpoints For example Run `pytest`
 
 ## Deployment
 
 The application is deployed on Heroku Server at
-> https://weconnect-tibe.herokuapp.com/api/v2
+> https://weconnect-tibe.herokuapp.com/api/v3
 
 ## License
 

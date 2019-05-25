@@ -1,39 +1,21 @@
 import os
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-
-
 class Config(object):
-
-
-    DEBUG = False
-    TESTING = False
-    SECRET_KEY = 'you-will-never-guess'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'postgresql://postgres@localhost/weconnectdb')
-    SWAGGER_UI_JSONEDITOR = True
-
-class DevelopmentConfig(Config):
-
-
-    DEVELOPMENT = True
-    DEBUG = True
-
-
-
-class TestingConfig(Config):
-
-
-    TESTING = True
-    DEBUG=True
-    SQLALCHEMY_DATABASE_URI = "postgresql://tibzy@localhost/test_weconnectdb"
-
+  DEBUG = False
+  TESTING = False
+  DATABASE_URI = 'sqlite:///:memory:'
 
 class ProductionConfig(Config):
+  DEBUG = False
+  DATABASE_URI = os.environ.get('DATABASE_URI')
 
+class DevelopmentConfig(Config):
+  DEBUG = True
+  DATABASE_URI = os.environ.get('DATABASE_URI')
 
-    DEBUG = False
-
+class TestingConfig(Config):
+  TESTING = True
+  DATABASE_URI = os.environ.get('TEST_DATABASE_URI')
 
 app_config = {
     'development': DevelopmentConfig,
